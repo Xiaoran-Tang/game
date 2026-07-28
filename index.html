@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>拼音泡泡·交通工具</title>
+    <title>识字泡泡 · 数字与汉字</title>
     <style>
         * {
             margin: 0;
@@ -35,7 +35,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.55);
+            background: rgba(0, 0, 0, 0.60);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -66,10 +66,11 @@
         }
         #options {
             display: flex;
-            gap: 14px;
+            gap: 12px;
             margin-bottom: 14px;
             flex-wrap: wrap;
             justify-content: center;
+            max-width: 90vw;
         }
         #options label {
             font-size: clamp(1.2rem, 3vw, 2.4rem);
@@ -78,7 +79,7 @@
             align-items: center;
             gap: 6px;
             background: rgba(255, 255, 255, 0.08);
-            padding: 6px 16px;
+            padding: 4px 14px;
             border-radius: 40px;
             transition: background 0.3s, border-color 0.3s;
             border: 2px solid transparent;
@@ -92,16 +93,17 @@
             background: rgba(255, 255, 255, 0.12);
         }
         #options input[type="checkbox"] {
-            width: clamp(20px, 3vw, 30px);
-            height: clamp(20px, 3vw, 30px);
+            width: clamp(18px, 2.8vw, 28px);
+            height: clamp(18px, 2.8vw, 28px);
             cursor: pointer;
             accent-color: #ffaa33;
             touch-action: manipulation;
         }
         #options .letter-label {
             font-weight: bold;
-            min-width: 26px;
+            min-width: 24px;
             text-align: center;
+            font-size: clamp(1.1rem, 2.8vw, 2.2rem);
         }
         #speedControls {
             display: flex;
@@ -216,12 +218,24 @@
             pointer-events: none;
             height: 18px;
         }
+        #backHint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.2);
+            font-size: clamp(0.6rem, 1.2vw, 0.9rem);
+            pointer-events: none;
+            z-index: 5;
+            letter-spacing: 2px;
+        }
         @media (max-width: 768px) {
             #overlay h1 { font-size: 2.8rem; }
             #overlay .sub { font-size: 1.4rem; }
             #startBtn { font-size: 1.6rem; padding: 12px 34px; }
             #options { gap: 8px; }
-            #options label { padding: 4px 10px; font-size: 1.1rem; }
+            #options label { padding: 3px 10px; font-size: 1rem; }
+            #options .letter-label { font-size: 1rem; min-width: 20px; }
             #speedControls { padding: 8px 12px; gap: 12px; flex-direction: column; align-items: center; border-radius: 30px; }
             .speed-item input[type="range"] { width: 100px; }
             #intervalSection { font-size: 0.85rem; gap: 6px; }
@@ -232,28 +246,39 @@
 <body>
 
     <div id="overlay">
-        <h1>🚀 拼音泡泡</h1>
-        <div class="sub">读出泡泡里的字母</div>
+        <h1>🌟 识字泡泡</h1>
+        <div class="sub">读出泡泡里的字</div>
 
         <div id="options">
-            <label class="active"><input type="checkbox" value="a" checked><span class="letter-label">ɑ</span></label>
-            <label class="active"><input type="checkbox" value="o" checked><span class="letter-label">o</span></label>
-            <label class="active"><input type="checkbox" value="e" checked><span class="letter-label">e</span></label>
-            <label><input type="checkbox" value="i"><span class="letter-label">i</span></label>
-            <label><input type="checkbox" value="u"><span class="letter-label">u</span></label>
-            <label><input type="checkbox" value="ü"><span class="letter-label">ü</span></label>
+            <!-- 数字 -->
+            <label class="active"><input type="checkbox" value="6" checked><span class="letter-label">6</span></label>
+            <label class="active"><input type="checkbox" value="7" checked><span class="letter-label">7</span></label>
+            <label class="active"><input type="checkbox" value="8" checked><span class="letter-label">8</span></label>
+            <label class="active"><input type="checkbox" value="9" checked><span class="letter-label">9</span></label>
+            <!-- 汉字 -->
+            <label class="active"><input type="checkbox" value="麦" ><span class="letter-label">麦</span></label>
+            <label class="active"><input type="checkbox" value="田" ><span class="letter-label">田</span></label>
+            <label class="active"><input type="checkbox" value="大" ><span class="letter-label">大</span></label>
+            <label class="active"><input type="checkbox" value="小" ><span class="letter-label">小</span></label>
+            <label class="active"><input type="checkbox" value="人" ><span class="letter-label">人</span></label>
+            <label class="active"><input type="checkbox" value="火" ><span class="letter-label">火</span></label>
+            <label class="active"><input type="checkbox" value="车" ><span class="letter-label">车</span></label>
+            <label class="active"><input type="checkbox" value="山" ><span class="letter-label">山</span></label>
+            <label class="active"><input type="checkbox" value="水" ><span class="letter-label">水</span></label>
+            <label class="active"><input type="checkbox" value="风" ><span class="letter-label">风</span></label>
+            <label class="active"><input type="checkbox" value="鱼" ><span class="letter-label">鱼</span></label>
         </div>
 
         <div id="speedControls">
             <div class="speed-item">
-                <label>🫧 速度</label>
-                <input type="range" id="bubbleSpeedSlider" min="0.2" max="2.0" step="0.1" value="0.7">
-                <span class="speed-value" id="bubbleSpeedDisplay">0.7</span>
+                <label>🫧 泡泡速度</label>
+                <input type="range" id="bubbleSpeedSlider" min="0.2" max="3.0" step="0.1" value="1.5">
+                <span class="speed-value" id="bubbleSpeedDisplay">1.5</span>
             </div>
             <div class="speed-item">
-                <label>🚀 车船</label>
-                <input type="range" id="creatureSpeedSlider" min="0.2" max="2.0" step="0.1" value="0.8">
-                <span class="speed-value" id="creatureSpeedDisplay">0.8</span>
+                <label>🚀 车辆速度</label>
+                <input type="range" id="creatureSpeedSlider" min="0.2" max="3.0" step="0.1" value="1.5">
+                <span class="speed-value" id="creatureSpeedDisplay">1.5</span>
             </div>
         </div>
 
@@ -271,10 +296,11 @@
     </div>
 
     <canvas id="gameCanvas"></canvas>
+    <div id="backHint">双击返回选字页面</div>
 
     <script>
         // ============================================================
-        // 精简版 · 电视适配 · 交通工具
+        // 识字泡泡 · 数字+汉字 · 双击返回
         // ============================================================
 
         // ---- DOM ----
@@ -308,17 +334,15 @@
         });
 
         // ---- 配置 ----
-        const DISPLAY_MAP = { 'a': 'ɑ', 'o': 'o', 'e': 'e', 'i': 'i', 'u': 'u', 'ü': 'ü' };
-        let activeLetters = ['a', 'o', 'e'];
-        let lastLetter = null;
+        // 所有可用字符（数字+汉字）
+        const ALL_CHARS = ['6', '7', '8', '9', '麦', '田', '大', '小', '人', '火', '车', '山', '水', '风', '鱼'];
+        let activeChars = ['6', '7', '8', '9', '麦', '田', '大', '小', '人', '火', '车', '山', '水', '风', '鱼'];
+        let lastChar = null;
         let triggerInterval = 20;
-        let bubbleSpeedMul = 0.7;
-        let creatureSpeedMul = 0.8;
+        let bubbleSpeedMul = 1.5;
+        let creatureSpeedMul = 1.5;
 
-        // ============================================================
-        // 交通工具绘制（纯emoji + 简单轨迹，无复杂计算）
-        // ============================================================
-
+        // ---- 交通工具 ----
         const VEHICLES = [
             { emoji: '✈️', label: '飞机' },
             { emoji: '🚂', label: '火车' },
@@ -328,23 +352,66 @@
             { emoji: '🚁', label: '直升机' }
         ];
 
-        // ---- 画交通工具（大尺寸 emoji + 简单光效） ----
-        function drawVehicle(ctx, x, y, size, progress, dir) {
-            const s = size;
-            ctx.save();
+        // ---- 游戏状态 ----
+        let gameRunning = false;
+        let score = 0;
+        let lastMilestone = 0;
+        let bubble = null;
+        let particles = [];
+        let floaters = [];
+        let easterEggActive = false;
+        let creature = null;
+        let creaturePaused = false;
 
-            // 随机选一个交通工具（在创建时已经选定，这里直接用传入的）
-            // 我们用 creature.emoji 在外部绘制，这里只负责绘制，但为了统一接口，我们直接用传入的 emoji
-            // 因为 emoji 绘制很简单，我们直接在 drawCreature 中处理
-            ctx.restore();
+        // ---- 双击返回 ----
+        let lastClickTime = 0;
+
+        function goBackToMenu() {
+            if (!gameRunning) return;
+            gameRunning = false;
+            overlay.style.display = 'flex';
+            // 保留当前选中的选项
+            // 速度滑块保留当前值
+            // 间隔保留
+            // 重置游戏状态
+            particles = [];
+            floaters = [];
+            bubble = null;
+            creature = null;
+            easterEggActive = false;
+            creaturePaused = false;
+            // 恢复得分显示（可选）
+            hint.textContent = '✨ 已返回，调整后重新开始';
+            hint.style.opacity = '1';
+            setTimeout(() => { hint.style.opacity = '0'; }, 1500);
         }
 
-        // ---- 实际绘制由 drawCreature 直接完成，更轻量 ----
+        // ---- 监听双击 ----
+        document.addEventListener('dblclick', function(e) {
+            goBackToMenu();
+        });
+
+        // 触摸设备双击检测
+        canvas.addEventListener('touchstart', function(e) {
+            const now = Date.now();
+            if (now - lastClickTime < 400) {
+                // 双击
+                e.preventDefault();
+                goBackToMenu();
+                lastClickTime = 0;
+            } else {
+                lastClickTime = now;
+            }
+        }, { passive: false });
+
+        // ============================================================
+        // 交通工具绘制（纯emoji + 简单光效）
+        // ============================================================
+
         function drawCreatureSimple(ctx, x, y, size, emoji, alpha) {
             ctx.save();
             ctx.globalAlpha = alpha * 0.92;
 
-            // 发光
             const grad = ctx.createRadialGradient(x, y, 0, x, y, size * 1.4);
             grad.addColorStop(0, `rgba(255,220,100,${0.06 * alpha})`);
             grad.addColorStop(1, 'rgba(255,220,100,0)');
@@ -353,7 +420,6 @@
             ctx.arc(x, y, size * 1.4, 0, Math.PI * 2);
             ctx.fill();
 
-            // emoji
             ctx.font = `${size * 1.6}px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -362,7 +428,6 @@
             ctx.fillText(emoji, x, y + size * 0.04);
             ctx.shadowBlur = 0;
 
-            // 底部柔光
             const glowGrad = ctx.createRadialGradient(x, y + size * 0.5, 0, x, y + size * 0.5, size * 0.7);
             glowGrad.addColorStop(0, `rgba(255,200,100,${0.05 * alpha})`);
             glowGrad.addColorStop(1, 'rgba(255,200,100,0)');
@@ -376,10 +441,6 @@
         }
 
         // ---- 车辆管理 ----
-        let easterEggActive = false;
-        let creature = null;
-        let creaturePaused = false;
-
         function spawnCreature() {
             const idx = Math.floor(Math.random() * VEHICLES.length);
             const v = VEHICLES[idx];
@@ -428,30 +489,19 @@
         }
 
         // ============================================================
-        // 游戏状态
-        // ============================================================
-        let gameRunning = false;
-        let score = 0;
-        let lastMilestone = 0;
-        let bubble = null;
-        let particles = [];
-        let floaters = [];
-
-        // ============================================================
         // 泡泡
         // ============================================================
         function createBubble() {
-            let available = activeLetters.filter(l => l !== lastLetter);
-            if (available.length === 0) available = activeLetters.slice();
-            const letter = available[Math.floor(Math.random() * available.length)];
-            lastLetter = letter;
+            let available = activeChars.filter(c => c !== lastChar);
+            if (available.length === 0) available = activeChars.slice();
+            const charVal = available[Math.floor(Math.random() * available.length)];
+            lastChar = charVal;
             const x = W / 2 + (Math.random() - 0.5) * 100;
             const y = H + 80;
             const radius = Math.min(W, H) * 0.18;
             const baseSpeed = (0.4 + Math.random() * 0.4) * bubbleSpeedMul;
             return {
-                letter: letter,
-                displayLetter: DISPLAY_MAP[letter] || letter,
+                char: charVal,
                 x, y, radius,
                 speed: Math.max(0.15, baseSpeed),
                 baseSpeed: Math.max(0.15, baseSpeed),
@@ -523,9 +573,8 @@
         canvas.addEventListener('contextmenu', e => { e.preventDefault(); if (!gameRunning) return;
             onWrong(); });
         canvas.addEventListener('touchstart', e => {
-            e.preventDefault();
             if (!gameRunning) return;
-            // 简单判断：左半屏=正确，右半屏=错误（适合电视遥控器模拟）
+            e.preventDefault();
             const touch = e.touches[0];
             if (touch.clientX < W / 2) onCorrect();
             else onWrong();
@@ -572,7 +621,7 @@
             floaters = [];
             score = 0;
             lastMilestone = 0;
-            lastLetter = null;
+            lastChar = null;
             creature = null;
             easterEggActive = false;
             creaturePaused = false;
@@ -587,7 +636,6 @@
         function update() {
             if (!gameRunning) return;
 
-            // 粒子
             for (let i = particles.length - 1; i >= 0; i--) {
                 const p = particles[i];
                 p.x += p.vx;
@@ -649,7 +697,6 @@
         function draw() {
             ctx.clearRect(0, 0, W, H);
 
-            // 深海渐变（轻量）
             const grad = ctx.createLinearGradient(0, 0, 0, H);
             grad.addColorStop(0, '#0a3a5a');
             grad.addColorStop(0.5, '#1a5a7a');
@@ -657,7 +704,6 @@
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, W, H);
 
-            // 水纹（简化）
             ctx.fillStyle = 'rgba(255,255,255,0.025)';
             for (let i = 0; i < 4; i++) {
                 const y = (H * 0.25) + i * 90 + Math.sin(Date.now() / 2000 + i) * 18;
@@ -666,7 +712,6 @@
                 ctx.fill();
             }
 
-            // 沙地
             ctx.fillStyle = '#4a6a5a';
             ctx.beginPath();
             ctx.rect(0, H - 30, W, 30);
@@ -679,7 +724,6 @@
                 ctx.fill();
             }
 
-            // 水草（简化）
             ctx.strokeStyle = '#2a7a4a';
             ctx.lineWidth = 5;
             for (let i = 0; i < 10; i++) {
@@ -695,18 +739,16 @@
                 ctx.stroke();
             }
 
-            // ---- 泡泡 ----
             if (!creaturePaused) {
                 for (let f of floaters) {
-                    drawBubble(f.x, f.y, f.radius, f.displayLetter, false);
+                    drawBubble(f.x, f.y, f.radius, f.char, false);
                 }
             }
 
             if (!creaturePaused && bubble && bubble.alive && !bubble.bursting) {
-                drawBubble(bubble.x, bubble.y, bubble.radius, bubble.displayLetter, true);
+                drawBubble(bubble.x, bubble.y, bubble.radius, bubble.char, true);
             }
 
-            // ---- 粒子 ----
             for (let p of particles) {
                 ctx.globalAlpha = p.life;
                 ctx.beginPath();
@@ -720,10 +762,8 @@
             }
             ctx.globalAlpha = 1;
 
-            // ---- 交通工具 ----
             drawCreature();
 
-            // ---- 得分 ----
             ctx.fillStyle = 'rgba(255,255,255,0.85)';
             ctx.font = `bold ${Math.min(W, H) * 0.04}px Arial`;
             ctx.textAlign = 'left';
@@ -733,7 +773,6 @@
             ctx.fillText(`⭐ ${score}`, 20, 20);
             ctx.shadowBlur = 0;
 
-            // ---- 下次提示 ----
             const nextMilestone = (Math.floor(score / triggerInterval) + 1) * triggerInterval;
             const remain = nextMilestone - score;
             if (remain > 0 && remain <= triggerInterval && !creaturePaused) {
@@ -745,7 +784,6 @@
                 ctx.fillText(`${e} 再答对 ${remain} 次`, 20, 20 + Math.min(W, H) * 0.045);
             }
 
-            // ---- 动物出现 ----
             if (creaturePaused && creature) {
                 ctx.fillStyle = 'rgba(255,255,255,0.3)';
                 ctx.font = `bold ${Math.min(W, H) * 0.025}px Arial`;
@@ -758,7 +796,7 @@
             }
         }
 
-        function drawBubble(x, y, radius, displayLetter, isMain) {
+        function drawBubble(x, y, radius, charVal, isMain) {
             ctx.save();
             const grad = ctx.createRadialGradient(x - radius * 0.2, y - radius * 0.2, radius * 0.1, x, y, radius);
             grad.addColorStop(0, 'rgba(255,255,255,0.85)');
@@ -777,12 +815,12 @@
             ctx.fillStyle = 'rgba(255,255,255,0.6)';
             ctx.fill();
             ctx.fillStyle = isMain ? '#ffffff' : 'rgba(255,255,255,0.5)';
-            ctx.font = `bold ${radius * 0.8}px Arial, "Helvetica", sans-serif`;
+            ctx.font = `bold ${radius * 1.2}px Arial, "Helvetica", "PingFang SC", sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.shadowColor = 'rgba(0,0,0,0.4)';
             ctx.shadowBlur = 16;
-            ctx.fillText(displayLetter, x, y + 4);
+            ctx.fillText(charVal, x, y + 4);
             ctx.shadowBlur = 0;
             ctx.restore();
         }
@@ -802,14 +840,14 @@
         function startGame() {
             const checked = options.querySelectorAll('input[type="checkbox"]:checked');
             if (checked.length === 0) {
-                hint.textContent = '⚠️ 请至少选一个字母！';
+                hint.textContent = '⚠️ 请至少选一个！';
                 hint.style.opacity = '1';
                 setTimeout(() => { hint.style.opacity = '0'; }, 1200);
                 return;
             }
-            activeLetters = [];
-            checked.forEach(cb => activeLetters.push(cb.value));
-            lastLetter = null;
+            activeChars = [];
+            checked.forEach(cb => activeChars.push(cb.value));
+            lastChar = null;
             triggerInterval = parseInt(intervalSelect.value);
             getSpeedMul();
 
@@ -825,7 +863,9 @@
         window.onload = function() { resizeCanvas(); };
         gameLoop();
 
-        console.log('🚀 拼音泡泡·交通工具版 已启动');
+        console.log('🌟 识字泡泡 · 数字+汉字 · 双击返回');
+        console.log('📖 可选字符:', ALL_CHARS.join(' '));
+        console.log('🔄 游戏内双击可返回选字页面');
     </script>
 </body>
 </html>
