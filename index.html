@@ -258,35 +258,35 @@
             <!-- 汉字 -->
             <label class="active"><input type="checkbox" value="麦" checked><span class="letter-label">麦</span></label>
             <label class="active"><input type="checkbox" value="田" checked><span class="letter-label">田</span></label>
-            <label class="active"><input type="checkbox" value="大" ><span class="letter-label">大</span></label>
-            <label class="active"><input type="checkbox" value="小" ><span class="letter-label">小</span></label>
-            <label class="active"><input type="checkbox" value="人" ><span class="letter-label">人</span></label>
-            <label class="active"><input type="checkbox" value="火" ><span class="letter-label">火</span></label>
-            <label class="active"><input type="checkbox" value="车" ><span class="letter-label">车</span></label>
-            <label class="active"><input type="checkbox" value="山" ><span class="letter-label">山</span></label>
-            <label class="active"><input type="checkbox" value="水" ><span class="letter-label">水</span></label>
-            <label class="active"><input type="checkbox" value="风" ><span class="letter-label">风</span></label>
-            <label class="active"><input type="checkbox" value="鱼" ><span class="letter-label">鱼</span></label>
+            <label><input type="checkbox" value="大"><span class="letter-label">大</span></label>
+            <label><input type="checkbox" value="小"><span class="letter-label">小</span></label>
+            <label><input type="checkbox" value="人"><span class="letter-label">人</span></label>
+            <label><input type="checkbox" value="火"><span class="letter-label">火</span></label>
+            <label><input type="checkbox" value="车"><span class="letter-label">车</span></label>
+            <label><input type="checkbox" value="山"><span class="letter-label">山</span></label>
+            <label><input type="checkbox" value="水"><span class="letter-label">水</span></label>
+            <label><input type="checkbox" value="风"><span class="letter-label">风</span></label>
+            <label><input type="checkbox" value="鱼"><span class="letter-label">鱼</span></label>
         </div>
 
         <div id="speedControls">
             <div class="speed-item">
                 <label>🫧 泡泡速度</label>
-                <input type="range" id="bubbleSpeedSlider" min="0.2" max="3.0" step="0.1" value="1.5">
-                <span class="speed-value" id="bubbleSpeedDisplay">1.5</span>
+                <input type="range" id="bubbleSpeedSlider" min="0.2" max="10.0" step="0.2" value="3">
+                <span class="speed-value" id="bubbleSpeedDisplay">3</span>
             </div>
             <div class="speed-item">
                 <label>🚀 车辆速度</label>
-                <input type="range" id="creatureSpeedSlider" min="0.2" max="3.0" step="0.1" value="1.5">
-                <span class="speed-value" id="creatureSpeedDisplay">1.5</span>
+                <input type="range" id="creatureSpeedSlider" min="0.2" max="10.0" step="0.2" value="3">
+                <span class="speed-value" id="creatureSpeedDisplay">3</span>
             </div>
         </div>
 
         <div id="intervalSection">
             <label>🎁 每答对</label>
             <select id="intervalSelect">
-                <option value="5">5</option><option value="10">10</option><option value="15">15</option>
-                <option value="10" selected>20</option><option value="25">25</option><option value="30">30</option><option value="50">50</option>
+                <option value="5">5</option><option value="10" selected>10</option><option value="15">15</option>
+                <option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="50">50</option>
             </select>
             <label>次出现车辆</label>
         </div>
@@ -296,11 +296,10 @@
     </div>
 
     <canvas id="gameCanvas"></canvas>
-    <div id="backHint">双击返回选字页面</div>
 
     <script>
         // ============================================================
-        // 识字泡泡 · 数字+汉字 · 双击返回
+        // 识字泡泡 · 优化版（性能 + 视觉）
         // ============================================================
 
         // ---- DOM ----
@@ -325,7 +324,7 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // ---- 速度滑块联动 ----
+        // ---- 速度滑块 ----
         bubbleSpeedSlider.addEventListener('input', function() {
             bubbleSpeedDisplay.textContent = parseFloat(this.value).toFixed(1);
         });
@@ -334,22 +333,17 @@
         });
 
         // ---- 配置 ----
-        // 所有可用字符（数字+汉字）
         const ALL_CHARS = ['6', '7', '8', '9', '麦', '田', '大', '小', '人', '火', '车', '山', '水', '风', '鱼'];
-        let activeChars = ['6', '7', '8', '9', '麦', '田', '大', '小', '人', '火', '车', '山', '水', '风', '鱼'];
+        let activeChars = ['6', '7', '8', '9', '麦', '田'];
         let lastChar = null;
-        let triggerInterval = 20;
-        let bubbleSpeedMul = 1.5;
-        let creatureSpeedMul = 1.5;
+        let triggerInterval = 10;
+        let bubbleSpeedMul = 3;
+        let creatureSpeedMul = 3;
 
         // ---- 交通工具 ----
         const VEHICLES = [
-            { emoji: '✈️', label: '飞机' },
-            { emoji: '🚂', label: '火车' },
-            { emoji: '🚗', label: '汽车' },
-            { emoji: '🏎️', label: '赛车' },
-            { emoji: '🚀', label: '火箭' },
-            { emoji: '🚁', label: '直升机' }
+            { emoji: '✈️' }, { emoji: '🚂' }, { emoji: '🚗' },
+            { emoji: '🏎️' }, { emoji: '🚀' }, { emoji: '🚁' }
         ];
 
         // ---- 游戏状态 ----
@@ -358,7 +352,6 @@
         let lastMilestone = 0;
         let bubble = null;
         let particles = [];
-        let floaters = [];
         let easterEggActive = false;
         let creature = null;
         let creaturePaused = false;
@@ -370,32 +363,20 @@
             if (!gameRunning) return;
             gameRunning = false;
             overlay.style.display = 'flex';
-            // 保留当前选中的选项
-            // 速度滑块保留当前值
-            // 间隔保留
-            // 重置游戏状态
             particles = [];
-            floaters = [];
             bubble = null;
             creature = null;
             easterEggActive = false;
             creaturePaused = false;
-            // 恢复得分显示（可选）
             hint.textContent = '✨ 已返回，调整后重新开始';
             hint.style.opacity = '1';
             setTimeout(() => { hint.style.opacity = '0'; }, 1500);
         }
 
-        // ---- 监听双击 ----
-        document.addEventListener('dblclick', function(e) {
-            goBackToMenu();
-        });
-
-        // 触摸设备双击检测
+        document.addEventListener('dblclick', goBackToMenu);
         canvas.addEventListener('touchstart', function(e) {
             const now = Date.now();
             if (now - lastClickTime < 400) {
-                // 双击
                 e.preventDefault();
                 goBackToMenu();
                 lastClickTime = 0;
@@ -405,61 +386,38 @@
         }, { passive: false });
 
         // ============================================================
-        // 交通工具绘制（纯emoji + 简单光效）
+        // 交通工具绘制（轻量）
         // ============================================================
-
         function drawCreatureSimple(ctx, x, y, size, emoji, alpha) {
             ctx.save();
             ctx.globalAlpha = alpha * 0.92;
-
-            const grad = ctx.createRadialGradient(x, y, 0, x, y, size * 1.4);
-            grad.addColorStop(0, `rgba(255,220,100,${0.06 * alpha})`);
-            grad.addColorStop(1, 'rgba(255,220,100,0)');
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.arc(x, y, size * 1.4, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.font = `${size * 1.6}px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif`;
+            ctx.font = `${size * 1.8}px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.shadowColor = 'rgba(255,200,100,0.3)';
-            ctx.shadowBlur = 30;
+            ctx.shadowColor = 'rgba(255,200,100,0.2)';
+            ctx.shadowBlur = 20;
             ctx.fillText(emoji, x, y + size * 0.04);
             ctx.shadowBlur = 0;
-
-            const glowGrad = ctx.createRadialGradient(x, y + size * 0.5, 0, x, y + size * 0.5, size * 0.7);
-            glowGrad.addColorStop(0, `rgba(255,200,100,${0.05 * alpha})`);
-            glowGrad.addColorStop(1, 'rgba(255,200,100,0)');
-            ctx.fillStyle = glowGrad;
-            ctx.beginPath();
-            ctx.ellipse(x, y + size * 0.5, size * 0.6, size * 0.12, 0, 0, Math.PI * 2);
-            ctx.fill();
-
             ctx.globalAlpha = 1;
             ctx.restore();
         }
 
-        // ---- 车辆管理 ----
         function spawnCreature() {
-            const idx = Math.floor(Math.random() * VEHICLES.length);
-            const v = VEHICLES[idx];
-            const size = Math.min(W, H) * (0.18 + Math.random() * 0.06);
+            const v = VEHICLES[Math.floor(Math.random() * VEHICLES.length)];
+            const size = Math.min(W, H) * (0.20 + Math.random() * 0.06);
             const fromLeft = Math.random() < 0.5;
-            const y = H * 0.08 + Math.random() * H * 0.60;
-            const baseSpeed = (0.6 + Math.random() * 0.4) * creatureSpeedMul;
+            const y = H * 0.10 + Math.random() * H * 0.55;
+            const baseSpeed = (0.8 + Math.random() * 0.4) * creatureSpeedMul;
             creature = {
                 emoji: v.emoji,
-                label: v.label,
                 x: fromLeft ? -size * 1.4 : W + size * 1.4,
                 y: y,
                 size: size,
                 speed: Math.max(0.2, baseSpeed) * (fromLeft ? 1 : -1),
                 waveOffset: Math.random() * Math.PI * 2,
-                waveAmplitude: size * 0.03,
+                waveAmplitude: size * 0.02,
                 fromLeft: fromLeft,
                 alpha: 0,
-                progress: 0
             };
             easterEggActive = true;
             creaturePaused = true;
@@ -467,10 +425,9 @@
 
         function updateCreature() {
             if (!creature) return;
-            if (creature.alpha < 1) creature.alpha = Math.min(1, creature.alpha + 0.035);
+            creature.alpha = Math.min(1, creature.alpha + 0.04);
             creature.x += creature.speed;
-            creature.waveOffset += 0.035;
-            creature.progress += 0.035;
+            creature.waveOffset += 0.03;
             creature.y += Math.sin(creature.waveOffset) * creature.waveAmplitude * 0.04;
             const margin = creature.size * 1.8;
             if ((creature.fromLeft && creature.x > W + margin) ||
@@ -484,8 +441,7 @@
 
         function drawCreature() {
             if (!creature) return;
-            const c = creature;
-            drawCreatureSimple(ctx, c.x, c.y, c.size, c.emoji, c.alpha);
+            drawCreatureSimple(ctx, creature.x, creature.y, creature.size, creature.emoji, creature.alpha);
         }
 
         // ============================================================
@@ -499,15 +455,14 @@
             const x = W / 2 + (Math.random() - 0.5) * 100;
             const y = H + 80;
             const radius = Math.min(W, H) * 0.18;
-            const baseSpeed = (0.4 + Math.random() * 0.4) * bubbleSpeedMul;
+            const baseSpeed = (0.4 + Math.random() * 0.3) * bubbleSpeedMul;
             return {
                 char: charVal,
                 x, y, radius,
                 speed: Math.max(0.15, baseSpeed),
-                baseSpeed: Math.max(0.15, baseSpeed),
                 angle: 0,
-                wobbleSpeed: 0.015 + Math.random() * 0.015,
-                wobbleAmplitude: 1.2 + Math.random() * 0.8,
+                wobbleSpeed: 0.012 + Math.random() * 0.01,
+                wobbleAmplitude: 1.0 + Math.random() * 0.6,
                 alive: true,
                 bursting: false,
                 matched: false,
@@ -515,23 +470,24 @@
             };
         }
 
-        // ---- 粒子（轻量） ----
+        // ---- 粒子（减少数量，提升性能） ----
         function spawnParticles(x, y) {
-            const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6bff', '#ffaa33', '#ff4757', '#2ed573'];
-            for (let i = 0; i < 60; i++) {
+            const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6bff', '#ffaa33'];
+            const count = 35; // 从60降到35
+            for (let i = 0; i < count; i++) {
                 const angle = Math.random() * Math.PI * 2;
-                const speed = 2 + Math.random() * 8;
-                const size = 3 + Math.random() * 10;
+                const speed = 1.5 + Math.random() * 6;
+                const size = 2 + Math.random() * 8;
                 particles.push({
-                    x: x + (Math.random() - 0.5) * 16,
-                    y: y + (Math.random() - 0.5) * 16,
+                    x: x + (Math.random() - 0.5) * 12,
+                    y: y + (Math.random() - 0.5) * 12,
                     vx: Math.cos(angle) * speed * (0.5 + Math.random()),
-                    vy: Math.sin(angle) * speed * (0.5 + Math.random()) - 2,
+                    vy: Math.sin(angle) * speed * (0.5 + Math.random()) - 1.5,
                     radius: size * (0.5 + Math.random() * 0.5),
                     life: 1.0,
-                    decay: 0.008 + Math.random() * 0.02,
+                    decay: 0.01 + Math.random() * 0.025,
                     color: colors[Math.floor(Math.random() * colors.length)],
-                    gravity: 0.05
+                    gravity: 0.04
                 });
             }
         }
@@ -558,7 +514,7 @@
 
             setTimeout(() => {
                 if (gameRunning && !creaturePaused) bubble = createBubble();
-            }, 500);
+            }, 400);
         }
 
         function onWrong() {
@@ -618,7 +574,6 @@
         // ============================================================
         function resetGame() {
             particles = [];
-            floaters = [];
             score = 0;
             lastMilestone = 0;
             lastChar = null;
@@ -636,6 +591,7 @@
         function update() {
             if (!gameRunning) return;
 
+            // 粒子更新（手动循环，避免 forEach 开销）
             for (let i = particles.length - 1; i >= 0; i--) {
                 const p = particles[i];
                 p.x += p.vx;
@@ -643,7 +599,9 @@
                 p.vy += p.gravity;
                 p.life -= p.decay;
                 p.radius *= 0.995;
-                if (p.life <= 0 || p.radius < 0.5) particles.splice(i, 1);
+                if (p.life <= 0 || p.radius < 0.3) {
+                    particles.splice(i, 1);
+                }
             }
 
             updateCreature();
@@ -655,28 +613,29 @@
             if (bubble.alive && !bubble.bursting) {
                 bubble.angle += bubble.wobbleSpeed;
                 const offsetX = Math.sin(bubble.angle) * bubble.wobbleAmplitude;
-                bubble.x += offsetX * 0.1;
+                bubble.x += offsetX * 0.08;
                 bubble.y -= bubble.speed;
 
                 if (bubble.y < bubble.radius + 20) {
                     bubble.y = bubble.radius + 20;
                     bubble.speed = 0;
                     bubble.topTimer += 1 / 60;
-                    if (bubble.topTimer > 4.5) {
+                    if (bubble.topTimer > 5.0) {
                         bubble.alive = false;
-                        for (let i = 0; i < 15; i++) {
+                        // 产生少量水花
+                        for (let i = 0; i < 10; i++) {
                             const angle = Math.random() * Math.PI * 2;
-                            const speed = 1 + Math.random() * 2;
+                            const speed = 0.5 + Math.random() * 1.5;
                             particles.push({
-                                x: bubble.x + (Math.random() - 0.5) * 10,
-                                y: bubble.y - 10 + (Math.random() - 0.5) * 10,
+                                x: bubble.x + (Math.random() - 0.5) * 8,
+                                y: bubble.y - 8 + (Math.random() - 0.5) * 8,
                                 vx: Math.cos(angle) * speed,
-                                vy: Math.sin(angle) * speed - 1,
-                                radius: 2 + Math.random() * 4,
+                                vy: Math.sin(angle) * speed - 0.5,
+                                radius: 1.5 + Math.random() * 3,
                                 life: 1.0,
-                                decay: 0.025 + Math.random() * 0.025,
-                                color: 'rgba(150,200,255,0.5)',
-                                gravity: 0.02
+                                decay: 0.03 + Math.random() * 0.03,
+                                color: 'rgba(150,200,255,0.4)',
+                                gravity: 0.015
                             });
                         }
                         setTimeout(() => {
@@ -692,11 +651,12 @@
         }
 
         // ============================================================
-        // 绘图
+        // 绘图（优化：减少不必要的绘制调用）
         // ============================================================
         function draw() {
             ctx.clearRect(0, 0, W, H);
 
+            // 渐变背景
             const grad = ctx.createLinearGradient(0, 0, 0, H);
             grad.addColorStop(0, '#0a3a5a');
             grad.addColorStop(0.5, '#1a5a7a');
@@ -704,124 +664,158 @@
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, W, H);
 
-            ctx.fillStyle = 'rgba(255,255,255,0.025)';
-            for (let i = 0; i < 4; i++) {
-                const y = (H * 0.25) + i * 90 + Math.sin(Date.now() / 2000 + i) * 18;
+            // 水纹（简化，减少椭圆数量）
+            ctx.fillStyle = 'rgba(255,255,255,0.02)';
+            const time = Date.now() / 2000;
+            for (let i = 0; i < 3; i++) {
+                const y = (H * 0.3) + i * 100 + Math.sin(time + i * 1.2) * 15;
                 ctx.beginPath();
-                ctx.ellipse(W / 2 + Math.sin(Date.now() / 3000 + i * 2) * 80, y, W * 0.5, 16, 0, 0, Math.PI * 2);
+                ctx.ellipse(W / 2 + Math.sin(time * 0.7 + i * 2) * 60, y, W * 0.45, 12, 0, 0, Math.PI * 2);
                 ctx.fill();
             }
 
+            // 沙地
             ctx.fillStyle = '#4a6a5a';
-            ctx.beginPath();
-            ctx.rect(0, H - 30, W, 30);
-            ctx.fill();
+            ctx.fillRect(0, H - 30, W, 30);
             ctx.fillStyle = '#5a7a6a';
-            for (let i = 0; i < 16; i++) {
-                const x = i * 70 + Math.sin(i) * 8;
+            for (let i = 0; i < 12; i++) {
+                const x = i * 80 + Math.sin(i * 0.7) * 10;
                 ctx.beginPath();
-                ctx.arc(x, H - 15 + Math.sin(i * 0.5) * 4, 18, 0, Math.PI, true);
+                ctx.arc(x, H - 14 + Math.sin(i * 0.5) * 3, 15, 0, Math.PI, true);
                 ctx.fill();
             }
 
+            // 水草（简化：减少点数，减少数量）
             ctx.strokeStyle = '#2a7a4a';
-            ctx.lineWidth = 5;
-            for (let i = 0; i < 10; i++) {
-                const baseX = 40 + i * 80 + Math.sin(i * 1.5) * 15;
-                const baseY = H - 18;
+            ctx.lineWidth = 4;
+            const time2 = Date.now() / 1800;
+            for (let i = 0; i < 8; i++) {
+                const baseX = 50 + i * 100 + Math.sin(i * 1.2) * 12;
+                const baseY = H - 16;
                 ctx.beginPath();
                 ctx.moveTo(baseX, baseY);
-                for (let t = 0; t < 16; t++) {
+                for (let t = 0; t < 12; t++) {
                     const y = baseY - t * 5;
-                    const x = baseX + Math.sin(t * 0.3 + Date.now() / 1600 + i) * (6 + t * 0.4);
+                    const x = baseX + Math.sin(t * 0.35 + time2 + i * 0.8) * (5 + t * 0.35);
                     ctx.lineTo(x, y);
                 }
                 ctx.stroke();
             }
 
-            if (!creaturePaused) {
-                for (let f of floaters) {
-                    drawBubble(f.x, f.y, f.radius, f.char, false);
-                }
-            }
-
+            // ---- 泡泡 ----
             if (!creaturePaused && bubble && bubble.alive && !bubble.bursting) {
                 drawBubble(bubble.x, bubble.y, bubble.radius, bubble.char, true);
             }
 
-            for (let p of particles) {
+            // ---- 粒子 ----
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
                 ctx.globalAlpha = p.life;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                 ctx.fillStyle = p.color;
                 ctx.fill();
                 ctx.shadowColor = p.color;
-                ctx.shadowBlur = 12;
+                ctx.shadowBlur = 6;
                 ctx.fill();
                 ctx.shadowBlur = 0;
             }
             ctx.globalAlpha = 1;
 
+            // ---- 交通工具 ----
             drawCreature();
 
+            // ---- 得分 ----
             ctx.fillStyle = 'rgba(255,255,255,0.85)';
             ctx.font = `bold ${Math.min(W, H) * 0.04}px Arial`;
             ctx.textAlign = 'left';
             ctx.textBaseline = 'top';
             ctx.shadowColor = 'rgba(0,0,0,0.5)';
             ctx.shadowBlur = 10;
-            ctx.fillText(`⭐ ${score}`, 20, 20);
+            ctx.fillText(`⭐ ${score}`, 18, 18);
             ctx.shadowBlur = 0;
 
+            // ---- 进度提示 ----
             const nextMilestone = (Math.floor(score / triggerInterval) + 1) * triggerInterval;
             const remain = nextMilestone - score;
-            if (remain > 0 && remain <= triggerInterval && !creaturePaused) {
-                ctx.fillStyle = 'rgba(255,255,255,0.2)';
+            if (remain > 0 && remain <= triggerInterval && !creaturePaused && !easterEggActive) {
+                ctx.fillStyle = 'rgba(255,255,255,0.18)';
                 ctx.font = `${Math.min(W, H) * 0.016}px Arial`;
                 ctx.textAlign = 'left';
                 ctx.textBaseline = 'top';
-                const e = VEHICLES[Math.floor(Math.random() * VEHICLES.length)].emoji;
-                ctx.fillText(`${e} 再答对 ${remain} 次`, 20, 20 + Math.min(W, H) * 0.045);
+                ctx.fillText(`🚀 再答对 ${remain} 次`, 18, 18 + Math.min(W, H) * 0.045);
             }
 
+            // ---- 动物出现 ----
             if (creaturePaused && creature) {
-                ctx.fillStyle = 'rgba(255,255,255,0.3)';
-                ctx.font = `bold ${Math.min(W, H) * 0.025}px Arial`;
+                ctx.fillStyle = 'rgba(255,255,255,0.25)';
+                ctx.font = `bold ${Math.min(W, H) * 0.03}px Arial`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'bottom';
                 ctx.shadowColor = 'rgba(0,0,0,0.8)';
                 ctx.shadowBlur = 12;
-                ctx.fillText(`✨ 来啦！`, W / 2, H - 40);
+                ctx.fillText(`✨ 来啦！`, W / 2, H - 50);
                 ctx.shadowBlur = 0;
             }
         }
 
+        // ---- 绘制单个泡泡（光斑改为角落狭长形） ----
         function drawBubble(x, y, radius, charVal, isMain) {
             ctx.save();
-            const grad = ctx.createRadialGradient(x - radius * 0.2, y - radius * 0.2, radius * 0.1, x, y, radius);
-            grad.addColorStop(0, 'rgba(255,255,255,0.85)');
-            grad.addColorStop(0.4, isMain ? 'rgba(100,200,255,0.6)' : 'rgba(150,200,200,0.4)');
-            grad.addColorStop(0.8, isMain ? 'rgba(50,150,255,0.4)' : 'rgba(80,160,180,0.25)');
-            grad.addColorStop(1, 'rgba(20,80,150,0.2)');
+
+            // 主体渐变
+            const grad = ctx.createRadialGradient(x - radius * 0.15, y - radius * 0.15, radius * 0.05, x, y, radius);
+            grad.addColorStop(0, 'rgba(255,255,255,0.80)');
+            grad.addColorStop(0.3, isMain ? 'rgba(120,210,255,0.55)' : 'rgba(150,200,200,0.35)');
+            grad.addColorStop(0.7, isMain ? 'rgba(60,160,255,0.35)' : 'rgba(80,160,180,0.20)');
+            grad.addColorStop(1, 'rgba(20,80,150,0.15)');
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, Math.PI * 2);
             ctx.fillStyle = grad;
             ctx.fill();
-            ctx.strokeStyle = isMain ? 'rgba(255,255,255,0.5)' : 'rgba(200,200,200,0.25)';
-            ctx.lineWidth = isMain ? 3 : 1.5;
+
+            // 边框
+            ctx.strokeStyle = isMain ? 'rgba(255,255,255,0.40)' : 'rgba(200,200,200,0.20)';
+            ctx.lineWidth = isMain ? 2.5 : 1.5;
             ctx.stroke();
+
+            // ---- 光斑1：左上角边缘 ----
+            ctx.save();
+            ctx.translate(x - radius * 0.52, y - radius * 0.52);
+            ctx.rotate(-0.5);
+            const gradSpot = ctx.createRadialGradient(0, 0, 0, 0, 0, radius * 0.30);
+            gradSpot.addColorStop(0, 'rgba(255,255,255,0.45)');
+            gradSpot.addColorStop(0.4, 'rgba(255,255,255,0.12)');
+            gradSpot.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = gradSpot;
             ctx.beginPath();
-            ctx.arc(x - radius * 0.25, y - radius * 0.25, radius * 0.12, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.ellipse(0, 0, radius * 0.30, radius * 0.09, 0, 0, Math.PI * 2);
             ctx.fill();
-            ctx.fillStyle = isMain ? '#ffffff' : 'rgba(255,255,255,0.5)';
+            ctx.restore();
+
+            // ---- 光斑2：左下角边缘 ----
+            ctx.save();
+            ctx.translate(x - radius * 0.48, y + radius * 0.48);
+            ctx.rotate(0.3);
+            const gradSpot2 = ctx.createRadialGradient(0, 0, 0, 0, 0, radius * 0.16);
+            gradSpot2.addColorStop(0, 'rgba(255,255,255,0.25)');
+            gradSpot2.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = gradSpot2;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, radius * 0.16, radius * 0.05, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            // ---- 文字 ----
+            ctx.fillStyle = isMain ? '#ffffff' : 'rgba(255,255,255,0.50)';
             ctx.font = `bold ${radius * 1.2}px Arial, "Helvetica", "PingFang SC", sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.shadowColor = 'rgba(0,0,0,0.4)';
-            ctx.shadowBlur = 16;
-            ctx.fillText(charVal, x, y + 4);
+            ctx.shadowColor = 'rgba(0,0,0,0.35)';
+            ctx.shadowBlur = 12;
+            ctx.fillText(charVal, x, y + 3);
             ctx.shadowBlur = 0;
+
             ctx.restore();
         }
 
@@ -863,9 +857,7 @@
         window.onload = function() { resizeCanvas(); };
         gameLoop();
 
-        console.log('🌟 识字泡泡 · 数字+汉字 · 双击返回');
-        console.log('📖 可选字符:', ALL_CHARS.join(' '));
-        console.log('🔄 游戏内双击可返回选字页面');
+        console.log('🌟 识字泡泡 · 性能优化版');
     </script>
 </body>
 </html>
