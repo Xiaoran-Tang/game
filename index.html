@@ -1,3 +1,4 @@
+<!-- WORD_CONFIG = -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -13,7 +14,7 @@
             align-items: center;
             height: 100vh;
             overflow: hidden;
-            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-family: 'Microsoft YaHei UI', 'PingFang SC', 'Noto Sans CJK SC', 'Source Han Sans SC', 'Arial', 'Helvetica', sans-serif;
             touch-action: none;
         }
         #gameContainer {
@@ -317,13 +318,13 @@
     <div id="speedControls">
         <div class="speed-item">
             <label>🫧 泡泡</label>
-            <input type="range" id="bubbleSpeedSlider" min="1" max="10" step="1" value="6">
-            <span class="speed-value" id="bubbleSpeedDisplay">6</span>
+            <input type="range" id="bubbleSpeedSlider" min="1" max="10" step="1" value="4">
+            <span class="speed-value" id="bubbleSpeedDisplay">4</span>
         </div>
         <div class="speed-item">
             <label>🏎️ 奖励</label>
-            <input type="range" id="creatureSpeedSlider" min="1" max="10" step="1" value="6">
-            <span class="speed-value" id="creatureSpeedDisplay">6</span>
+            <input type="range" id="creatureSpeedSlider" min="1" max="10" step="1" value="4">
+            <span class="speed-value" id="creatureSpeedDisplay">4</span>
         </div>
     </div>
 
@@ -355,7 +356,34 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js">
 </script>
 <script>
-    // 识字泡泡 · PixiJS 版
+
+    // ---- 字词库 ----
+    const WORD_CONFIG = {
+        config: {
+            bubbleSpeed: 3,
+            creatureSpeed: 4,
+        },
+        new_words: [
+            { text: '人', selected: true },
+            { text: '火', selected: true },
+            { text: '雨', selected: true },
+            { text: '风', selected: true },
+            { text: '兔', selected: true },
+            { text: '月', selected: false },
+            { text: '羊', selected: false },
+            { text: '门', selected: false },
+            { text: '电', selected: false },
+            { text: '中', selected: false },
+            { text: '众', selected: false },
+            { text: '火车', selected: true },
+            { text: '恐龙', selected: true },
+            { text: '飞机', selected: true },
+            { text: '跑车', selected: false },
+        ],
+        review_words: [
+            '6', '9', '麦', '田', '大', '小', '车', '山', '鱼'
+        ],
+    };
 
     const overlay = document.getElementById('overlay');
     const startBtn = document.getElementById('startBtn');
@@ -373,39 +401,41 @@
     const bubbleSpeedDisplay = document.getElementById('bubbleSpeedDisplay');
     const creatureSpeedDisplay = document.getElementById('creatureSpeedDisplay');
 
-    // ---- 字词库 ----
-    let WORDS_DATA = [];
     let ALL_WORDS = [];
     let activeChars = [];
     let reviewChars = [];
     let lastChar = null;
     let triggerInterval = 10;
-    let bubbleSpeedMul = 6;
-    let creatureSpeedMul = 6;
+    let bubbleSpeedMul = WORD_CONFIG.config.bubbleSpeed;
+    let creatureSpeedMul = WORD_CONFIG.config.creatureSpeed;
     let nextBubbleMode = null;
     let gameRunning = false;
 
-    async function loadWords() {
-        const url = './words.json';
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const data = await response.json();
-            WORDS_DATA = Array.isArray(data) ? data : [];
-        } catch (err) {
-            console.error('加载字词 JSON 失败：', err);
-            WORDS_DATA = [];
-        }
+    function clampSpeedValue(value, fallback) {
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed)) return fallback;
+        return Math.min(10, Math.max(1, Math.round(parsed)));
+    }
 
-        ALL_WORDS = WORDS_DATA.map(item => item.text);
-        reviewChars = WORDS_DATA.filter(item => item.review === true).map(item => item.text);
-        activeChars = WORDS_DATA.filter(item => item.selected === true).map(item => item.text);
+    function initializeWords() {
+        const newWords = Array.isArray(WORD_CONFIG.new_words) ? WORD_CONFIG.new_words : [];
+        const reviewWords = Array.isArray(WORD_CONFIG.review_words) ? WORD_CONFIG.review_words : [];
+
+        bubbleSpeedMul = clampSpeedValue(WORD_CONFIG.config.bubbleSpeed, 4);
+        creatureSpeedMul = clampSpeedValue(WORD_CONFIG.config.creatureSpeed, 4);
+        bubbleSpeedSlider.value = String(bubbleSpeedMul);
+        bubbleSpeedDisplay.textContent = String(bubbleSpeedMul);
+        creatureSpeedSlider.value = String(creatureSpeedMul);
+        creatureSpeedDisplay.textContent = String(creatureSpeedMul);
+
+        ALL_WORDS = newWords.map(item => item.text);
+        activeChars = newWords.filter(item => item.selected === true).map(item => item.text);
+        reviewChars = reviewWords.map(item => String(item));
     }
 
     function renderWords() {
         mainGrid.innerHTML = '';
         ALL_WORDS.forEach(w => {
-            if (reviewChars.includes(w)) return;
             const tag = document.createElement('span');
             tag.className = 'word-tag' + (activeChars.includes(w) ? ' active' : '');
             tag.textContent = w;
@@ -422,11 +452,10 @@
                 e.preventDefault();
                 if (reviewChars.includes(w)) {
                     reviewChars = reviewChars.filter(c => c !== w);
-                    if (!activeChars.includes(w)) activeChars.push(w);
                 } else {
                     reviewChars.push(w);
-                    activeChars = activeChars.filter(c => c !== w);
                 }
+                if (!activeChars.includes(w)) activeChars.push(w);
                 renderWords();
             });
             mainGrid.appendChild(tag);
@@ -443,7 +472,6 @@
                 tag.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
                     reviewChars = reviewChars.filter(c => c !== w);
-                    if (!activeChars.includes(w)) activeChars.push(w);
                     renderWords();
                 });
                 reviewGrid.appendChild(tag);
@@ -462,7 +490,6 @@
                 tag.textContent = w;
                 tag.addEventListener('click', () => {
                     reviewChars = reviewChars.filter(c => c !== w);
-                    if (!activeChars.includes(w)) activeChars.push(w);
                     renderWords();
                     reviewModalGrid.innerHTML = '';
                     reviewBtn.click();
@@ -524,7 +551,7 @@
     let lastMilestone = 0;
     let bubble = null;
     let particles = [];
-    let creature = null;
+    let creatures = [];
     let creaturePaused = false;
     let easterEggActive = false;
 
@@ -617,14 +644,15 @@
 
         const text = new PIXI.Text(charVal, {
             fontSize: radius * 1.2,
-            fill: isMain ? '#ffffff' : 'rgba(255,255,255,0.6)',
-            fontFamily: 'KaiTi, 楷体, "Microsoft YaHei", Arial, sans-serif',
-            fontWeight: 'bold',
+            fill: isMain ? '#ffffff' : 'rgba(255,255,255,0.72)',
+            fontFamily: '"Microsoft YaHei UI", "PingFang SC", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif',
+            fontWeight: '500',
+            fontStyle: 'normal',
             align: 'center',
             dropShadow: true,
             dropShadowColor: '#000000',
-            dropShadowAlpha: 0.3,
-            dropShadowBlur: 8,
+            dropShadowAlpha: 0.18,
+            dropShadowBlur: 4,
         });
         text.anchor.set(0.5);
         container.addChild(text);
@@ -667,7 +695,7 @@
         const radius = Math.min(W, H) * 0.18;
         const x = W / 2 + (Math.random() - 0.5) * 180;
         const y = H + radius + 20;
-        const baseSpeed = (0.4 + Math.random() * 0.3) * bubbleSpeedMul;
+        const baseSpeed = (240 + Math.random() * 80) * (bubbleSpeedMul / 6);
         const sprite = createBubbleSprite(charVal, x, y, radius, true);
         bubbleLayer.addChild(sprite);
 
@@ -680,7 +708,7 @@
             x: x,
             y: y,
             radius: radius,
-            speed: Math.max(0.15, baseSpeed),
+            speed: Math.max(140, baseSpeed),
             angle: 0,
             wobbleSpeed: 0.01 + Math.random() * 0.02,
             wobbleAmplitude: 2.5 + Math.random() * 1.6,
@@ -805,81 +833,119 @@
     ];
 
     // ---- 生成车辆 ----
-    function spawnCreature() {
-        const idx = Math.floor(Math.random() * VEHICLES.length);
-        const v = VEHICLES[idx];
-        const size = Math.min(W, H) * (0.20 + Math.random() * 0.06);
-        const hasExhaust = !!v.hasExhaust;
-        const fromLeft = !hasExhaust;
-        const y = H * 0.10 + Math.random() * H * 0.55;
-        const baseSpeed = (0.8 + Math.random() * 0.4) * creatureSpeedMul;
+    function spawnCreature(options = {}) {
+        const {
+            count = 1,
+            hasExhaust = null,
+            direction = null,
+            baseY = null,
+            spreadY = 0,
+            startOffset = 0,
+            cols: requestedCols = null,
+        } = options;
 
-        const sprite = drawEmojiPixi(0, 0, size, v.emoji);
-        sprite.scale.x = fromLeft ? -1 : 1;
-        sprite.x = fromLeft ? -size * 1.4 : W + size * 1.4;
-        sprite.y = y;
-        creatureLayer.addChild(sprite);
+        const chosenHasExhaust = hasExhaust !== null ? hasExhaust : (Math.random() < 0.5);
+        const chosenDirection = direction || (chosenHasExhaust ? 'right' : 'left');
+        const fromLeft = chosenDirection === 'left';
+        const vehicles = VEHICLES.filter(v => !!v.hasExhaust === chosenHasExhaust);
+        if (vehicles.length === 0) return;
 
-        creature = {
-            sprite: sprite,
-            x: fromLeft ? -size * 1.4 : W + size * 1.4,
-            y: y,
-            size: size,
-            speed: Math.max(0.2, baseSpeed) * (fromLeft ? 1 : -1),
-            waveOffset: Math.random() * Math.PI * 2,
-            waveAmplitude: size * 0.02,
-            fromLeft: fromLeft,
-            alpha: 0,
-            exhaustTimer: 0,
-            hasExhaust: hasExhaust,
-        };
+        const chosenVehicle = vehicles[Math.floor(Math.random() * vehicles.length)];
+        const cols = requestedCols !== null ? requestedCols : (count >= 10 ? 2 : Math.min(count, 5));
+        const rows = Math.ceil(count / cols);
+        const totalWidth = Math.min(W, H) * 0.8 + 120;
+        const spacingX = cols > 1 ? totalWidth / (cols - 1) : 0;
+        const minY = H * 0.30;
+        const maxY = H * 0.70;
+        const spacingY = rows > 1 ? (maxY - minY) / (rows - 1) : 0;
+
+        for (let i = 0; i < count; i++) {
+            const v = chosenVehicle;
+            const size = Math.min(W, H) * (0.16 + Math.random() * 0.04);
+            const col = i % cols;
+            const row = Math.floor(i / cols);
+            const x = fromLeft
+                ? -size * 1.4 - 80 + startOffset + col * spacingX
+                : W + size * 1.4 + 80 + startOffset - col * spacingX;
+            const y = baseY !== null
+                ? baseY + (row - (rows - 1) / 2) * (rows > 1 ? spreadY / ((rows - 1) / 2) : 0)
+                : minY + row * spacingY + (Math.random() - 0.5) * 30;
+            const baseSpeed = (0.8 + Math.random() * 0.4) * creatureSpeedMul;
+
+            const sprite = drawEmojiPixi(0, 0, size, v.emoji);
+            sprite.scale.x = fromLeft ? -1 : 1;
+            sprite.x = x;
+            sprite.y = y;
+            creatureLayer.addChild(sprite);
+
+            creatures.push({
+                sprite: sprite,
+                x: x,
+                y: y,
+                size: size,
+                speed: Math.max(0.2, baseSpeed) * (fromLeft ? 1 : -1),
+                waveOffset: Math.random() * Math.PI * 2,
+                waveAmplitude: size * 0.02,
+                fromLeft: fromLeft,
+                alpha: 0,
+                exhaustTimer: 0,
+                hasExhaust: chosenHasExhaust,
+            });
+        }
+
         easterEggActive = true;
         creaturePaused = true;
-        sprite.alpha = 0;
+        creatures.forEach(c => c.sprite.alpha = 0);
     }
 
     // ---- 更新车辆 ----
-    function updateCreature() {
-        if (!creature) return;
-        creature.alpha = Math.min(1, creature.alpha + 0.04);
-        creature.sprite.alpha = creature.alpha * 0.95;
-        creature.x += creature.speed;
-        creature.waveOffset += 0.03;
-        creature.y += Math.sin(creature.waveOffset) * creature.waveAmplitude * 0.04;
-        creature.sprite.x = creature.x;
-        creature.sprite.y = creature.y;
-        creature.exhaustTimer += 1;
-        if (creature.hasExhaust && creature.exhaustTimer % 6 === 0) {
-            const offsetX = creature.fromLeft ? -creature.size * 1.05 : creature.size * 1.05;
-            const offsetY = creature.size * 0.40 + 10;
-            const color = 0xffcc66;
-            const count = 6;
-            for (let i = 0; i < count; i++) {
-                const p = new PIXI.Graphics();
-                p.beginFill(color, 0.65 - Math.random() * 0.25);
-                const radius = 3 + Math.random() * 4;
-                p.drawCircle(0, 0, radius);
-                p.endFill();
-                p.x = creature.x + offsetX + (Math.random() - 0.5) * 6;
-                p.y = creature.y + offsetY + (Math.random() - 0.5) * 5;
-                particleLayer.addChild(p);
-                particles.push({
-                    sprite: p,
-                    x: p.x,
-                    y: p.y,
-                    vx: creature.fromLeft ? -1.1 - Math.random() * 0.5 : -0.8 - Math.random() * 0.2,
-                    vy: -0.4 + Math.random() * 0.6,
-                    life: 1.0,
-                    decay: 0.015 + Math.random() * 0.02,
-                    gravity: 0.01,
-                });
+    function updateCreatures() {
+        if (creatures.length === 0) return;
+        for (let i = creatures.length - 1; i >= 0; i--) {
+            const creatureObj = creatures[i];
+            creatureObj.alpha = Math.min(1, creatureObj.alpha + 0.04);
+            creatureObj.sprite.alpha = creatureObj.alpha * 0.95;
+            creatureObj.x += creatureObj.speed;
+            creatureObj.waveOffset += 0.03;
+            creatureObj.y += Math.sin(creatureObj.waveOffset) * creatureObj.waveAmplitude * 0.04;
+            creatureObj.sprite.x = creatureObj.x;
+            creatureObj.sprite.y = creatureObj.y;
+            creatureObj.exhaustTimer += 1;
+            if (creatureObj.hasExhaust && creatureObj.exhaustTimer % 6 === 0) {
+                const offsetX = creatureObj.fromLeft ? -creatureObj.size * 1.05 : creatureObj.size * 1.05;
+                const offsetY = creatureObj.size * 0.40 + 10;
+                const color = 0xffcc66;
+                const count = 6;
+                for (let j = 0; j < count; j++) {
+                    const p = new PIXI.Graphics();
+                    p.beginFill(color, 0.65 - Math.random() * 0.25);
+                    const radius = 3 + Math.random() * 4;
+                    p.drawCircle(0, 0, radius);
+                    p.endFill();
+                    p.x = creatureObj.x + offsetX + (Math.random() - 0.5) * 6;
+                    p.y = creatureObj.y + offsetY + (Math.random() - 0.5) * 5;
+                    particleLayer.addChild(p);
+                    particles.push({
+                        sprite: p,
+                        x: p.x,
+                        y: p.y,
+                        vx: creatureObj.fromLeft ? -1.1 - Math.random() * 0.5 : -0.8 - Math.random() * 0.2,
+                        vy: -0.4 + Math.random() * 0.6,
+                        life: 1.0,
+                        decay: 0.015 + Math.random() * 0.02,
+                        gravity: 0.01,
+                    });
+                }
+            }
+            const margin = creatureObj.size * 1.8;
+            if ((creatureObj.fromLeft && creatureObj.x > W + margin) ||
+                (!creatureObj.fromLeft && creatureObj.x < -margin)) {
+                creatureLayer.removeChild(creatureObj.sprite);
+                creatures.splice(i, 1);
             }
         }
-        const margin = creature.size * 1.8;
-        if ((creature.fromLeft && creature.x > W + margin) ||
-            (!creature.fromLeft && creature.x < -margin)) {
-            creatureLayer.removeChild(creature.sprite);
-            creature = null;
+
+        if (creatures.length === 0) {
             easterEggActive = false;
             creaturePaused = false;
             if (gameRunning && !bubble) bubble = createBubble();
@@ -902,7 +968,23 @@
         }
 
         const milestone = Math.floor(score / triggerInterval);
-        if (milestone > lastMilestone && score % triggerInterval === 0 && !easterEggActive) {
+        if (score === 30 && !easterEggActive) {
+            lastMilestone = milestone;
+            spawnCreature({
+                count: 10,
+                hasExhaust: Math.random() < 0.5,
+                direction: Math.random() < 0.5 ? 'left' : 'right',
+                baseY: H * 0.45,
+                spreadY: H * 0.32,
+                startOffset: 0,
+                cols: 2,
+            });
+            if (bubble) {
+                bubble.alive = false;
+                bubbleLayer.removeChild(bubble.sprite);
+                bubble = null;
+            }
+        } else if (milestone > lastMilestone && score % triggerInterval === 0 && !easterEggActive) {
             lastMilestone = milestone;
             spawnCreature();
             if (bubble) {
@@ -960,7 +1042,8 @@
         creatureLayer.removeChildren();
         particles = [];
         bubble = null;
-        creature = null;
+        creatures.forEach(c => creatureLayer.removeChild(c.sprite));
+        creatures = [];
         easterEggActive = false;
         creaturePaused = false;
         hint.textContent = '✨ 已返回，调整后重新开始';
@@ -987,7 +1070,8 @@
         score = 0;
         lastMilestone = 0;
         lastChar = null;
-        creature = null;
+        creatures.forEach(c => creatureLayer.removeChild(c.sprite));
+        creatures = [];
         easterEggActive = false;
         creaturePaused = false;
         if (bubble) {
@@ -998,15 +1082,16 @@
     }
 
     // ---- 更新 ----
-    function update() {
+    function update(deltaTime = 1 / 60) {
         if (!gameRunning) return;
+        const step = deltaTime * 60;
         for (let i = particles.length - 1; i >= 0; i--) {
             const p = particles[i];
-            p.x += p.vx;
-            p.y += p.vy;
+            p.x += p.vx * step;
+            p.y += p.vy * step;
             p.vx *= p.friction || 0.98;
-            p.vy += p.gravity || 0.04;
-            p.life -= p.decay;
+            p.vy += (p.gravity || 0.04) * step;
+            p.life -= (p.decay || 0.02) * step;
             p.sprite.alpha = Math.max(0, p.life);
             p.sprite.x = p.x;
             p.sprite.y = p.y;
@@ -1015,23 +1100,24 @@
                 particles.splice(i, 1);
             }
         }
-        updateCreature();
+        updateCreatures();
         if (creaturePaused) return;
         if (!bubble && gameRunning) { bubble = createBubble(); return; }
         if (!bubble) return;
         if (bubble.alive && !bubble.bursting) {
             if (bubble.mode === 'mischief') {
-                bubble.phaseTimer += 1 / 60;
+                bubble.phaseTimer += deltaTime;
                 if (bubble.phase === 'bounce') {
-                    bubble.vx += (Math.random() * 2 - 1) * 0.6;
-                    bubble.vy += (Math.random() * 2 - 1) * 0.6;
+                    bubble.vx += (Math.random() * 2 - 1) * 0.6 * step;
+                    bubble.vy += (Math.random() * 2 - 1) * 0.6 * step;
                     const speed = Math.sqrt(bubble.vx * bubble.vx + bubble.vy * bubble.vy);
-                    if (speed > 16) {
-                        bubble.vx *= 16 / speed;
-                        bubble.vy *= 16 / speed;
+                    const maxSpeed = 320;
+                    if (speed > maxSpeed) {
+                        bubble.vx *= maxSpeed / speed;
+                        bubble.vy *= maxSpeed / speed;
                     }
-                    bubble.x += bubble.vx;
-                    bubble.y += bubble.vy;
+                    bubble.x += bubble.vx * step;
+                    bubble.y += bubble.vy * step;
                     if (bubble.x - bubble.radius < 0) {
                         bubble.x = bubble.radius;
                         bubble.vx = Math.abs(bubble.vx) * 0.96;
@@ -1059,8 +1145,8 @@
                         bubble.spiralDecay = Math.log(Math.max(bubble.initialSpiralRadius / 8, 1)) / totalDelta;
                     }
                 } else if (bubble.phase === 'spiral') {
-                    bubble.spiralTimer += 1 / 60;
-                    bubble.spiralAngle += bubble.spiralOmega;
+                    bubble.spiralTimer += deltaTime;
+                    bubble.spiralAngle += bubble.spiralOmega * step;
                     const deltaTheta = bubble.spiralAngle - bubble.spiralThetaStart;
                     const r = bubble.initialSpiralRadius * Math.exp(-bubble.spiralDecay * deltaTheta);
                     bubble.x = W / 2 - r * Math.cos(bubble.spiralAngle);
@@ -1070,17 +1156,17 @@
                         bubble.angle = 0;
                         bubble.wobbleAmplitude = 2.5 + Math.random() * 1.6;
                         bubble.wobbleSpeed = 0.01 + Math.random() * 0.02;
-                        bubble.speed = Math.max(0.15, (0.4 + Math.random() * 0.3) * bubbleSpeedMul);
+                        bubble.speed = Math.max(140, (240 + Math.random() * 80) * (bubbleSpeedMul / 6));
                     }
                 }
                 bubble.sprite.x = bubble.x;
                 bubble.sprite.y = bubble.y;
                 bubble.sprite.rotation = 0;
             } else {
-                bubble.angle += bubble.wobbleSpeed;
+                bubble.angle += bubble.wobbleSpeed * step;
                 const offsetX = Math.sin(bubble.angle) * bubble.wobbleAmplitude;
-                bubble.x += offsetX * 0.08;
-                bubble.y -= bubble.speed;
+                bubble.x += offsetX * 0.08 * step;
+                bubble.y -= bubble.speed * deltaTime;
                 bubble.sprite.x = bubble.x;
                 bubble.sprite.y = bubble.y;
                 bubble.sprite.rotation = Math.sin(bubble.angle) * 0.05;
@@ -1088,7 +1174,7 @@
                 if (bubble.y < bubble.radius + 20) {
                     bubble.y = bubble.radius + 20;
                     bubble.speed = 0;
-                    bubble.topTimer += 1 / 60;
+                    bubble.topTimer += deltaTime;
                     if (bubble.topTimer > 5.0) {
                         bubble.alive = false;
                         bubble.bursting = true;
@@ -1131,8 +1217,8 @@
         const scoreText = new PIXI.Text(`⭐ ${score}`, {
             fontSize: Math.min(W, H) * 0.04,
             fill: '#ffffff',
-            fontFamily: 'Arial',
-            fontWeight: 'bold',
+            fontFamily: '"Microsoft YaHei UI", "PingFang SC", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif',
+            fontWeight: '500',
             dropShadow: true,
             dropShadowColor: '#000000',
             dropShadowAlpha: 0.5,
@@ -1140,6 +1226,17 @@
         });
         scoreText.x = 18;
         scoreText.y = 18;
+        scoreText.interactive = true;
+        scoreText.buttonMode = true;
+        scoreText.cursor = 'pointer';
+        scoreText.hitArea = new PIXI.Rectangle(0, 0, scoreText.width, scoreText.height);
+        scoreText.on('pointerdown', () => {
+            const value = prompt('请输入答对次数', String(score));
+            const next = Number(value);
+            if (Number.isInteger(next) && next >= 0) {
+                score = next;
+            }
+        });
         uiLayer.addChild(scoreText);
 
         const nextMilestone = (Math.floor(score / triggerInterval) + 1) * triggerInterval;
@@ -1148,19 +1245,21 @@
             const progressText = new PIXI.Text(`🏁 再答对 ${remain} 次`, {
                 fontSize: Math.min(W, H) * 0.016,
                 fill: 'rgba(255,255,255,0.25)',
-                fontFamily: 'Arial',
+                fontFamily: '"Microsoft YaHei UI", "PingFang SC", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif',
             });
             progressText.x = 18;
             progressText.y = 18 + Math.min(W, H) * 0.045;
             uiLayer.addChild(progressText);
         }
-
     }
 
     // ---- 游戏循环 ----
-    function gameLoop() {
-        drawBackground();
-        update();
+    let lastFrameTime = performance.now();
+
+    function gameLoop(now = performance.now()) {
+        const deltaTime = Math.min(0.033, (now - lastFrameTime) / 1000 || 1 / 60);
+        lastFrameTime = now;
+        update(deltaTime);
         renderUI();
         requestAnimationFrame(gameLoop);
     }
@@ -1190,16 +1289,14 @@
             overlay.style.display = 'none';
             resetGame();
         }
-        if (!creature && !easterEggActive) {
+        if (creatures.length === 0 && !easterEggActive) {
             spawnCreature();
         }
     });
 
     window.onload = async function() {
-        await loadWords();
+        initializeWords();
         renderWords();
-        bubbleSpeedDisplay.textContent = bubbleSpeedSlider.value;
-        creatureSpeedDisplay.textContent = creatureSpeedSlider.value;
         drawBackground();
         gameLoop();
     };
