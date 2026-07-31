@@ -3,16 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>识字泡泡 · 数字与汉字</title>
+    <title>识字泡泡</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
         body {
-            background: #0a1a2e;
+            background: #1a5a7a;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -21,11 +16,10 @@
             font-family: 'Arial', 'Helvetica', sans-serif;
             touch-action: none;
         }
-        canvas {
+        #gameContainer {
             display: block;
             width: 100vw;
             height: 100vh;
-            background: radial-gradient(circle at 20% 30%, #1a4a6a, #0a1a2e);
             cursor: pointer;
             touch-action: none;
         }
@@ -35,103 +29,124 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.60);
+            background: linear-gradient(135deg, #4a9aba, #2a7a9a);
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             z-index: 10;
-            color: white;
+            color: #ffffff;
             text-align: center;
-            backdrop-filter: blur(4px);
-            padding: 20px;
+            padding: 15px;
             overflow-y: auto;
             touch-action: pan-y;
+            gap: 8px;
+            box-shadow: inset 0 0 100px rgba(255,255,255,0.1);
         }
         #overlay h1 {
-            font-size: clamp(3.5rem, 10vw, 6.5rem);
-            text-shadow: 0 0 40px #00ccff, 0 0 80px #0088aa;
-            margin-bottom: 10px;
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-        @keyframes glow {
-            0% { text-shadow: 0 0 40px #00ccff, 0 0 80px #0088aa; }
-            100% { text-shadow: 0 0 60px #00ddff, 0 0 120px #00aacc, 0 0 180px #006688; }
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            text-shadow: 0 0 40px rgba(255,255,255,0.3), 0 0 80px rgba(0,180,255,0.3);
+            margin-bottom: 2px;
+            color: #fff;
         }
         #overlay .sub {
-            font-size: clamp(1.5rem, 4vw, 3rem);
+            font-size: clamp(1.2rem, 3vw, 2rem);
             opacity: 0.9;
-            margin-bottom: 14px;
-            letter-spacing: 6px;
+            margin-bottom: 4px;
+            color: #f0f8ff;
         }
-        #options {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
-            justify-content: center;
-            max-width: 90vw;
-        }
-        #options label {
-            font-size: clamp(1.2rem, 3vw, 2.4rem);
-            cursor: pointer;
+        .section-title {
+            font-size: clamp(1rem, 2.5vw, 1.6rem);
+            opacity: 0.9;
+            margin: 4px 0 2px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.08);
-            padding: 4px 14px;
-            border-radius: 40px;
-            transition: background 0.3s, border-color 0.3s;
-            border: 2px solid transparent;
-            touch-action: manipulation;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            color: #f0f8ff;
         }
-        #options label:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-        #options label.active {
-            border-color: rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.12);
-        }
-        #options input[type="checkbox"] {
-            width: clamp(18px, 2.8vw, 28px);
-            height: clamp(18px, 2.8vw, 28px);
+        .section-title button {
+            font-size: clamp(0.8rem, 1.8vw, 1.2rem);
+            padding: 4px 18px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.15);
+            color: white;
             cursor: pointer;
-            accent-color: #ffaa33;
-            touch-action: manipulation;
+            transition: 0.2s;
         }
-        #options .letter-label {
-            font-weight: bold;
-            min-width: 24px;
-            text-align: center;
-            font-size: clamp(1.1rem, 2.8vw, 2.2rem);
+        .section-title button:hover { background: rgba(255,255,255,0.3); }
+        .word-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            max-width: 95vw;
+            padding: 4px 0;
+        }
+        .word-tag {
+            font-size: clamp(1.2rem, 3vw, 2.2rem);
+            padding: 4px 16px;
+            border-radius: 40px;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            touch-action: manipulation;
+            color: #fff;
+            backdrop-filter: blur(2px);
+        }
+        .word-tag.active {
+            border-color: rgba(255,255,255,0.6);
+            background: rgba(255,255,255,0.25);
+        }
+        .word-tag.review {
+            border-color: #ffcc66;
+            background: rgba(255,204,102,0.2);
+        }
+        .word-tag:hover { background: rgba(255,255,255,0.3); }
+        #reviewArea {
+            display: none;
+            min-height: 40px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+            padding-top: 6px;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+        }
+        #reviewArea .word-grid { min-height: 34px; }
+        #reviewEmpty {
+            opacity: 0.6;
+            font-size: clamp(0.9rem, 2vw, 1.4rem);
+            color: #e0f0ff;
         }
         #speedControls {
             display: flex;
-            gap: 24px;
+            gap: 20px;
             flex-wrap: wrap;
             justify-content: center;
-            margin-bottom: 14px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px 20px;
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255,255,255,0.12);
+            padding: 6px 16px;
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.15);
         }
         .speed-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: clamp(0.8rem, 2vw, 1.4rem);
-        }
-        .speed-item label {
-            opacity: 0.8;
-            white-space: nowrap;
+            gap: 6px;
+            font-size: clamp(0.8rem, 2vw, 1.2rem);
+            color: #f0f8ff;
         }
         .speed-item input[type="range"] {
-            width: clamp(80px, 12vw, 150px);
-            height: 6px;
+            width: clamp(70px, 10vw, 120px);
+            height: 5px;
             -webkit-appearance: none;
             appearance: none;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255,255,255,0.3);
             border-radius: 3px;
             outline: none;
             cursor: pointer;
@@ -139,725 +154,954 @@
         .speed-item input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
-            background: #ffaa33;
+            background: #ffcc66;
             cursor: pointer;
-            box-shadow: 0 0 12px rgba(255, 170, 51, 0.4);
         }
         .speed-item input[type="range"]::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
-            background: #ffaa33;
+            background: #ffcc66;
             cursor: pointer;
             border: none;
         }
         .speed-value {
-            min-width: 30px;
+            min-width: 28px;
             text-align: center;
             font-weight: bold;
-            color: #ffaa33;
-            font-size: clamp(0.9rem, 2vw, 1.5rem);
+            color: #ffcc66;
+            font-size: clamp(0.9rem, 2vw, 1.3rem);
         }
         #intervalSection {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 14px;
-            font-size: clamp(0.9rem, 2.5vw, 1.8rem);
+            gap: 8px;
+            font-size: clamp(0.9rem, 2vw, 1.4rem);
             flex-wrap: wrap;
             justify-content: center;
-        }
-        #intervalSection label {
-            opacity: 0.8;
+            color: #f0f8ff;
         }
         #intervalSelect {
-            font-size: clamp(0.9rem, 2.5vw, 1.8rem);
-            padding: 4px 14px;
+            font-size: clamp(0.9rem, 2vw, 1.4rem);
+            padding: 2px 12px;
             border-radius: 30px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: #fff;
             cursor: pointer;
             outline: none;
-            transition: border-color 0.3s;
-            touch-action: manipulation;
         }
-        #intervalSelect:hover {
-            border-color: rgba(255, 255, 255, 0.6);
-        }
-        #intervalSelect option {
-            background: #1a3a5a;
-            color: white;
-        }
+        #intervalSelect option { background: #1a5a7a; color: #fff; }
         #startBtn {
-            font-size: clamp(1.8rem, 4.5vw, 3.2rem);
-            padding: 14px 50px;
+            font-size: clamp(1.8rem, 4.5vw, 3rem);
+            padding: 12px 44px;
             border: none;
             border-radius: 60px;
-            background: #ffaa33;
-            color: #1a2a3a;
+            background: #ffcc66;
+            color: #1a3a4a;
             font-weight: bold;
-            box-shadow: 0 0 50px #ffaa3366;
+            box-shadow: 0 0 40px rgba(255,204,102,0.4);
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-bottom: 4px;
-            touch-action: manipulation;
+            transition: 0.2s;
+            margin: 4px 0;
         }
-        #startBtn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 70px #ffaa3388;
+        #startBtn:hover { transform: scale(1.05); box-shadow: 0 0 60px rgba(255,204,102,0.6); }
+
+        #testRewardBtn {
+            position: absolute;
+            right: 24px;
+            top: 200px;
+            width: 56px;
+            height: 56px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.18);
+            color: #ffffff;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.18);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            margin: 0;
         }
+        #testRewardBtn:hover { transform: scale(1.1); background: rgba(255,255,255,0.26); }
         #hint {
             font-size: clamp(0.6rem, 1.2vw, 0.9rem);
             opacity: 0;
-            margin-top: 4px;
-            letter-spacing: 2px;
-            pointer-events: none;
             height: 18px;
+            pointer-events: none;
+            color: #fff;
         }
         #backHint {
             position: fixed;
-            bottom: 20px;
+            bottom: 12px;
             left: 50%;
             transform: translateX(-50%);
-            color: rgba(255,255,255,0.2);
-            font-size: clamp(0.6rem, 1.2vw, 0.9rem);
+            color: rgba(255,255,255,0.25);
+            font-size: clamp(0.5rem, 1vw, 0.8rem);
             pointer-events: none;
             z-index: 5;
-            letter-spacing: 2px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 20;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: rgba(30,80,100,0.95);
+            padding: 30px 40px;
+            border-radius: 30px;
+            max-width: 80vw;
+            max-height: 70vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+        }
+        .modal-content h2 {
+            margin-bottom: 15px;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+        }
+        .modal-content .word-grid { gap: 12px; }
+        .modal-content .word-tag {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            padding: 6px 20px;
+        }
+        .modal-close {
+            margin-top: 20px;
+            padding: 8px 30px;
+            border-radius: 40px;
+            border: none;
+            background: #ffcc66;
+            color: #1a3a4a;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
         }
         @media (max-width: 768px) {
-            #overlay h1 { font-size: 2.8rem; }
-            #overlay .sub { font-size: 1.4rem; }
-            #startBtn { font-size: 1.6rem; padding: 12px 34px; }
-            #options { gap: 8px; }
-            #options label { padding: 3px 10px; font-size: 1rem; }
-            #options .letter-label { font-size: 1rem; min-width: 20px; }
-            #speedControls { padding: 8px 12px; gap: 12px; flex-direction: column; align-items: center; border-radius: 30px; }
-            .speed-item input[type="range"] { width: 100px; }
-            #intervalSection { font-size: 0.85rem; gap: 6px; }
-            #intervalSelect { font-size: 0.85rem; padding: 3px 10px; }
+            #overlay h1 { font-size: 2.5rem; }
+            .word-tag { font-size: 1rem; padding: 3px 10px; }
+            #speedControls { gap: 12px; padding: 4px 10px; }
+            .modal-content { padding: 20px; max-width: 95vw; }
         }
     </style>
 </head>
 <body>
 
-    <div id="overlay">
-        <h1>🌟 识字泡泡</h1>
-        <div class="sub">读出泡泡里的字</div>
+<div id="overlay">
+    <h1>🏎️ 识字泡泡</h1>
+    <div class="sub">读出泡泡里的字，累计正确即可召唤奖励</div>
 
-        <div id="options">
-            <!-- 数字 -->
-            <label class="active"><input type="checkbox" value="6" checked><span class="letter-label">6</span></label>
-            <label class="active"><input type="checkbox" value="7" checked><span class="letter-label">7</span></label>
-            <label class="active"><input type="checkbox" value="8" checked><span class="letter-label">8</span></label>
-            <label class="active"><input type="checkbox" value="9" checked><span class="letter-label">9</span></label>
-            <!-- 汉字 -->
-            <label class="active"><input type="checkbox" value="麦" checked><span class="letter-label">麦</span></label>
-            <label class="active"><input type="checkbox" value="田" checked><span class="letter-label">田</span></label>
-            <label><input type="checkbox" value="大"><span class="letter-label">大</span></label>
-            <label><input type="checkbox" value="小"><span class="letter-label">小</span></label>
-            <label><input type="checkbox" value="人"><span class="letter-label">人</span></label>
-            <label><input type="checkbox" value="火"><span class="letter-label">火</span></label>
-            <label><input type="checkbox" value="车"><span class="letter-label">车</span></label>
-            <label><input type="checkbox" value="山"><span class="letter-label">山</span></label>
-            <label><input type="checkbox" value="水"><span class="letter-label">水</span></label>
-            <label><input type="checkbox" value="风"><span class="letter-label">风</span></label>
-            <label><input type="checkbox" value="鱼"><span class="letter-label">鱼</span></label>
-        </div>
+    <div class="section-title">
+        <span>📚 新字词</span>
+        <button id="reviewBtn">📖 复习</button>
+    </div>
+    <div id="mainGrid" class="word-grid"></div>
 
-        <div id="speedControls">
-            <div class="speed-item">
-                <label>🫧 泡泡速度</label>
-                <input type="range" id="bubbleSpeedSlider" min="0.2" max="10.0" step="0.2" value="3">
-                <span class="speed-value" id="bubbleSpeedDisplay">3</span>
-            </div>
-            <div class="speed-item">
-                <label>🚀 车辆速度</label>
-                <input type="range" id="creatureSpeedSlider" min="0.2" max="10.0" step="0.2" value="3">
-                <span class="speed-value" id="creatureSpeedDisplay">3</span>
-            </div>
-        </div>
-
-        <div id="intervalSection">
-            <label>🎁 每答对</label>
-            <select id="intervalSelect">
-                <option value="5">5</option><option value="10" selected>10</option><option value="15">15</option>
-                <option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="50">50</option>
-            </select>
-            <label>次出现车辆</label>
-        </div>
-
-        <button id="startBtn">开始游戏</button>
-        <div id="hint"> </div>
+    <div id="reviewArea">
+        <div class="section-title"><span>🔁 复习集</span></div>
+        <div id="reviewGrid" class="word-grid"><span id="reviewEmpty">（空）</span></div>
     </div>
 
-    <canvas id="gameCanvas"></canvas>
+    <div id="speedControls">
+        <div class="speed-item">
+            <label>🫧 泡泡</label>
+            <input type="range" id="bubbleSpeedSlider" min="1" max="10" step="1" value="6">
+            <span class="speed-value" id="bubbleSpeedDisplay">6</span>
+        </div>
+        <div class="speed-item">
+            <label>🏎️ 奖励</label>
+            <input type="range" id="creatureSpeedSlider" min="1" max="10" step="1" value="6">
+            <span class="speed-value" id="creatureSpeedDisplay">6</span>
+        </div>
+    </div>
 
-    <script>
-        // ============================================================
-        // 识字泡泡 · 优化版（性能 + 视觉）
-        // ============================================================
+    <div id="intervalSection">
+        <label>🎁 每答对</label>
+        <select id="intervalSelect">
+            <option value="5">5</option><option value="10" selected>10</option>
+            <option value="15">15</option><option value="20">20</option>
+            <option value="25">25</option><option value="30">30</option><option value="50">50</option>
+        </select>
+        <label>次出奖励</label>
+    </div>
 
-        // ---- DOM ----
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const overlay = document.getElementById('overlay');
-        const startBtn = document.getElementById('startBtn');
-        const options = document.getElementById('options');
-        const intervalSelect = document.getElementById('intervalSelect');
-        const hint = document.getElementById('hint');
-        const bubbleSpeedSlider = document.getElementById('bubbleSpeedSlider');
-        const creatureSpeedSlider = document.getElementById('creatureSpeedSlider');
-        const bubbleSpeedDisplay = document.getElementById('bubbleSpeedDisplay');
-        const creatureSpeedDisplay = document.getElementById('creatureSpeedDisplay');
+    <button id="startBtn">开始游戏</button>
+    <button id="testRewardBtn" type="button" aria-label="测试奖励">🫧</button>
+</div>
 
-        let W, H;
+<div class="modal" id="reviewModal">
+    <div class="modal-content">
+        <h2>📖 复习字词</h2>
+        <div id="reviewModalGrid" class="word-grid"></div>
+        <button class="modal-close" id="modalCloseBtn">关闭</button>
+    </div>
+</div>
 
-        function resizeCanvas() {
-            W = canvas.width = window.innerWidth;
-            H = canvas.height = window.innerHeight;
+<div id="gameContainer"></div>
+<div id="backHint">双击返回选字页面</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js">
+</script>
+<script>
+    // 识字泡泡 · PixiJS 版
+
+    const overlay = document.getElementById('overlay');
+    const startBtn = document.getElementById('startBtn');
+    const testRewardBtn = document.getElementById('testRewardBtn');
+    const mainGrid = document.getElementById('mainGrid');
+    const reviewGrid = document.getElementById('reviewGrid');
+    const reviewBtn = document.getElementById('reviewBtn');
+    const reviewModal = document.getElementById('reviewModal');
+    const reviewModalGrid = document.getElementById('reviewModalGrid');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const intervalSelect = document.getElementById('intervalSelect');
+    const hint = document.getElementById('hint');
+    const bubbleSpeedSlider = document.getElementById('bubbleSpeedSlider');
+    const creatureSpeedSlider = document.getElementById('creatureSpeedSlider');
+    const bubbleSpeedDisplay = document.getElementById('bubbleSpeedDisplay');
+    const creatureSpeedDisplay = document.getElementById('creatureSpeedDisplay');
+
+    // ---- 字词库 ----
+    let WORDS_DATA = [];
+    let ALL_WORDS = [];
+    let activeChars = [];
+    let reviewChars = [];
+    let lastChar = null;
+    let triggerInterval = 10;
+    let bubbleSpeedMul = 6;
+    let creatureSpeedMul = 6;
+    let gameRunning = false;
+
+    async function loadWords() {
+        const url = './words.json';
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            WORDS_DATA = Array.isArray(data) ? data : [];
+        } catch (err) {
+            console.error('加载字词 JSON 失败：', err);
+            WORDS_DATA = [];
         }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
 
-        // ---- 速度滑块 ----
-        bubbleSpeedSlider.addEventListener('input', function() {
-            bubbleSpeedDisplay.textContent = parseFloat(this.value).toFixed(1);
-        });
-        creatureSpeedSlider.addEventListener('input', function() {
-            creatureSpeedDisplay.textContent = parseFloat(this.value).toFixed(1);
-        });
+        ALL_WORDS = WORDS_DATA.map(item => item.text);
+        reviewChars = WORDS_DATA.filter(item => item.review === true).map(item => item.text);
+        activeChars = WORDS_DATA.filter(item => item.selected === true).map(item => item.text);
+    }
 
-        // ---- 配置 ----
-        const ALL_CHARS = ['6', '7', '8', '9', '麦', '田', '大', '小', '人', '火', '车', '山', '水', '风', '鱼'];
-        let activeChars = ['6', '7', '8', '9', '麦', '田'];
-        let lastChar = null;
-        let triggerInterval = 10;
-        let bubbleSpeedMul = 3;
-        let creatureSpeedMul = 3;
-
-        // ---- 交通工具 ----
-        const VEHICLES = [
-            { emoji: '✈️' }, { emoji: '🚂' }, { emoji: '🚗' },
-            { emoji: '🏎️' }, { emoji: '🚀' }, { emoji: '🚁' }
-        ];
-
-        // ---- 游戏状态 ----
-        let gameRunning = false;
-        let score = 0;
-        let lastMilestone = 0;
-        let bubble = null;
-        let particles = [];
-        let easterEggActive = false;
-        let creature = null;
-        let creaturePaused = false;
-
-        // ---- 双击返回 ----
-        let lastClickTime = 0;
-
-        function goBackToMenu() {
-            if (!gameRunning) return;
-            gameRunning = false;
-            overlay.style.display = 'flex';
-            particles = [];
-            bubble = null;
-            creature = null;
-            easterEggActive = false;
-            creaturePaused = false;
-            hint.textContent = '✨ 已返回，调整后重新开始';
-            hint.style.opacity = '1';
-            setTimeout(() => { hint.style.opacity = '0'; }, 1500);
-        }
-
-        document.addEventListener('dblclick', goBackToMenu);
-        canvas.addEventListener('touchstart', function(e) {
-            const now = Date.now();
-            if (now - lastClickTime < 400) {
+    function renderWords() {
+        mainGrid.innerHTML = '';
+        ALL_WORDS.forEach(w => {
+            if (reviewChars.includes(w)) return;
+            const tag = document.createElement('span');
+            tag.className = 'word-tag' + (activeChars.includes(w) ? ' active' : '');
+            tag.textContent = w;
+            tag.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (activeChars.includes(w)) {
+                    activeChars = activeChars.filter(c => c !== w);
+                } else {
+                    activeChars.push(w);
+                }
+                renderWords();
+            });
+            tag.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
-                goBackToMenu();
-                lastClickTime = 0;
-            } else {
-                lastClickTime = now;
+                if (reviewChars.includes(w)) {
+                    reviewChars = reviewChars.filter(c => c !== w);
+                    if (!activeChars.includes(w)) activeChars.push(w);
+                } else {
+                    reviewChars.push(w);
+                    activeChars = activeChars.filter(c => c !== w);
+                }
+                renderWords();
+            });
+            mainGrid.appendChild(tag);
+        });
+
+        reviewGrid.innerHTML = '';
+        if (reviewChars.length === 0) {
+            reviewGrid.innerHTML = '<span id="reviewEmpty">（空）</span>';
+        } else {
+            reviewChars.forEach(w => {
+                const tag = document.createElement('span');
+                tag.className = 'word-tag review';
+                tag.textContent = w;
+                tag.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    reviewChars = reviewChars.filter(c => c !== w);
+                    if (!activeChars.includes(w)) activeChars.push(w);
+                    renderWords();
+                });
+                reviewGrid.appendChild(tag);
+            });
+        }
+    }
+
+    reviewBtn.addEventListener('click', () => {
+        reviewModalGrid.innerHTML = '';
+        if (reviewChars.length === 0) {
+            reviewModalGrid.innerHTML = '<span style="opacity:0.5;">暂无复习字词</span>';
+        } else {
+            reviewChars.forEach(w => {
+                const tag = document.createElement('span');
+                tag.className = 'word-tag review';
+                tag.textContent = w;
+                tag.addEventListener('click', () => {
+                    reviewChars = reviewChars.filter(c => c !== w);
+                    if (!activeChars.includes(w)) activeChars.push(w);
+                    renderWords();
+                    reviewModalGrid.innerHTML = '';
+                    reviewBtn.click();
+                });
+                reviewModalGrid.appendChild(tag);
+            });
+        }
+        reviewModal.classList.add('show');
+    });
+    modalCloseBtn.addEventListener('click', () => reviewModal.classList.remove('show'));
+    reviewModal.addEventListener('click', (e) => {
+        if (e.target === reviewModal) reviewModal.classList.remove('show');
+    });
+
+    bubbleSpeedSlider.addEventListener('input', function() {
+        bubbleSpeedDisplay.textContent = this.value;
+    });
+    creatureSpeedSlider.addEventListener('input', function() {
+        creatureSpeedDisplay.textContent = this.value;
+    });
+
+    // PixiJS 初始化
+    const container = document.getElementById('gameContainer');
+    const app = new PIXI.Application({
+        width: window.innerWidth,
+        height: window.innerHeight,
+        backgroundColor: 0x1a5a7a,
+        resolution: 1,
+        autoDensity: true,
+        antialias: true,
+    });
+    container.appendChild(app.view);
+    app.view.style.width = '100%';
+    app.view.style.height = '100%';
+
+    let W = window.innerWidth;
+    let H = window.innerHeight;
+    window.addEventListener('resize', () => {
+        W = window.innerWidth;
+        H = window.innerHeight;
+        app.renderer.resize(W, H);
+        drawBackground();
+    });
+
+    // ---- 分层 ----
+    const bgLayer = new PIXI.Container();
+    const bubbleLayer = new PIXI.Container();
+    const particleLayer = new PIXI.Container();
+    const creatureLayer = new PIXI.Container();
+    const uiLayer = new PIXI.Container();
+    app.stage.addChild(bgLayer);
+    app.stage.addChild(bubbleLayer);
+    app.stage.addChild(particleLayer);
+    app.stage.addChild(creatureLayer);
+    app.stage.addChild(uiLayer);
+
+    // ---- 游戏状态 ----
+    let score = 0;
+    let lastMilestone = 0;
+    let bubble = null;
+    let particles = [];
+    let creature = null;
+    let creaturePaused = false;
+    let easterEggActive = false;
+
+    // ---- 绘制背景 ----
+    function drawBackground() {
+        bgLayer.removeChildren();
+        const bg = new PIXI.Graphics();
+        bg.beginFill(0x1a6a8a);
+        bg.drawRect(0, 0, W, H);
+        bg.endFill();
+        bgLayer.addChild(bg);
+
+        const time = Date.now() / 2000;
+        for (let i = 0; i < 4; i++) {
+            const y = (H * 0.3) + i * 90 + Math.sin(time + i * 1.2) * 15;
+            const g = new PIXI.Graphics();
+            g.beginFill(0xffffff, 0.07);
+            g.drawEllipse(W / 2 + Math.sin(time * 0.7 + i * 2) * 60, y, W * 0.45, 12);
+            g.endFill();
+            bgLayer.addChild(g);
+        }
+
+        const sand = new PIXI.Graphics();
+        sand.beginFill(0x6a8a6a);
+        sand.drawRect(0, H - 30, W, 30);
+        sand.endFill();
+        bgLayer.addChild(sand);
+
+        for (let i = 0; i < 12; i++) {
+            const x = i * 80 + Math.sin(i * 0.7) * 10;
+            const g = new PIXI.Graphics();
+            g.beginFill(0x7a9a7a);
+            g.arc(x, H - 14 + Math.sin(i * 0.5) * 3, 15, 0, Math.PI, true);
+            g.closePath();
+            g.endFill();
+            bgLayer.addChild(g);
+        }
+
+        const time2 = Date.now() / 1800;
+        for (let i = 0; i < 8; i++) {
+            const baseX = 50 + i * 100 + Math.sin(i * 1.2) * 12;
+            const baseY = H - 16;
+            const g = new PIXI.Graphics();
+            g.lineStyle(4, 0x4a9a5a);
+            g.moveTo(baseX, baseY);
+            for (let t = 0; t < 12; t++) {
+                const y = baseY - t * 5;
+                const x = baseX + Math.sin(t * 0.35 + time2 + i * 0.8) * (5 + t * 0.35);
+                g.lineTo(x, y);
             }
-        }, { passive: false });
-
-        // ============================================================
-        // 交通工具绘制（轻量）
-        // ============================================================
-        function drawCreatureSimple(ctx, x, y, size, emoji, alpha) {
-            ctx.save();
-            ctx.globalAlpha = alpha * 0.92;
-            ctx.font = `${size * 1.8}px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.shadowColor = 'rgba(255,200,100,0.2)';
-            ctx.shadowBlur = 20;
-            ctx.fillText(emoji, x, y + size * 0.04);
-            ctx.shadowBlur = 0;
-            ctx.globalAlpha = 1;
-            ctx.restore();
+            bgLayer.addChild(g);
         }
 
-        function spawnCreature() {
-            const v = VEHICLES[Math.floor(Math.random() * VEHICLES.length)];
-            const size = Math.min(W, H) * (0.20 + Math.random() * 0.06);
-            const fromLeft = Math.random() < 0.5;
-            const y = H * 0.10 + Math.random() * H * 0.55;
-            const baseSpeed = (0.8 + Math.random() * 0.4) * creatureSpeedMul;
-            creature = {
-                emoji: v.emoji,
-                x: fromLeft ? -size * 1.4 : W + size * 1.4,
-                y: y,
-                size: size,
-                speed: Math.max(0.2, baseSpeed) * (fromLeft ? 1 : -1),
-                waveOffset: Math.random() * Math.PI * 2,
-                waveAmplitude: size * 0.02,
-                fromLeft: fromLeft,
-                alpha: 0,
-            };
-            easterEggActive = true;
-            creaturePaused = true;
-        }
-
-        function updateCreature() {
-            if (!creature) return;
-            creature.alpha = Math.min(1, creature.alpha + 0.04);
-            creature.x += creature.speed;
-            creature.waveOffset += 0.03;
-            creature.y += Math.sin(creature.waveOffset) * creature.waveAmplitude * 0.04;
-            const margin = creature.size * 1.8;
-            if ((creature.fromLeft && creature.x > W + margin) ||
-                (!creature.fromLeft && creature.x < -margin)) {
-                creature = null;
-                easterEggActive = false;
-                creaturePaused = false;
-                if (gameRunning && !bubble) bubble = createBubble();
+        for (let i = 0; i < 10; i++) {
+            const baseX = 30 + i * 90 + Math.sin(i * 1.0 + time2 * 0.88) * 10;
+            const baseY = H - 28;
+            const waviness = 1 + Math.sin(time2 * 0.4 + i * 0.7) * 0.7;
+            const g = new PIXI.Graphics();
+            g.lineStyle(5, 0x2a8a5b, 0.9);
+            g.moveTo(baseX, baseY);
+            for (let t = 0; t < 16; t++) {
+                const y = baseY - t * 7;
+                const sway = Math.sin(t * 0.18 + time2 * (0.8 + i * 0.02)) * (8 + t * 0.35) * waviness;
+                const x = baseX + sway;
+                g.lineTo(x, y);
             }
+            bgLayer.addChild(g);
         }
+    }
+    drawBackground();
 
-        function drawCreature() {
-            if (!creature) return;
-            drawCreatureSimple(ctx, creature.x, creature.y, creature.size, creature.emoji, creature.alpha);
+    // ---- 工具：绘制泡泡 Sprite ----
+    function createBubbleSprite(charVal, x, y, radius, isMain) {
+        const container = new PIXI.Container();
+        container.x = x;
+        container.y = y;
+
+        const g = new PIXI.Graphics();
+        g.lineStyle(2, 0xffffff, isMain ? 0.5 : 0.25);
+        g.beginFill(0xffffff, 0.1);
+        g.drawCircle(0, 0, radius);
+        g.endFill();
+        container.addChild(g);
+
+        const g2 = new PIXI.Graphics();
+        g2.beginFill(0xffffff, 0.3);
+        g2.drawCircle(-radius * 0.15, -radius * 0.15, radius * 0.6);
+        g2.endFill();
+        container.addChild(g2);
+
+        const text = new PIXI.Text(charVal, {
+            fontSize: radius * 1.2,
+            fill: isMain ? '#ffffff' : 'rgba(255,255,255,0.6)',
+            fontFamily: 'KaiTi, 楷体, "Microsoft YaHei", Arial, sans-serif',
+            fontWeight: 'bold',
+            align: 'center',
+            dropShadow: true,
+            dropShadowColor: '#000000',
+            dropShadowAlpha: 0.3,
+            dropShadowBlur: 8,
+        });
+        text.anchor.set(0.5);
+        container.addChild(text);
+
+        const spot = new PIXI.Graphics();
+        spot.beginFill(0xffffff, 0.45);
+        spot.drawEllipse(-radius * 0.4, -radius * 0.4, radius * 0.25, radius * 0.07);
+        spot.endFill();
+        container.addChild(spot);
+
+        const spot2 = new PIXI.Graphics();
+        spot2.beginFill(0xffffff, 0.25);
+        spot2.drawEllipse(-radius * 0.35, radius * 0.4, radius * 0.15, radius * 0.04);
+        spot2.endFill();
+        container.addChild(spot2);
+
+        return container;
+    }
+
+    // ---- 泡泡 ----
+    function createBubble() {
+        let pool = [];
+        const m = activeChars.length;
+        const n = reviewChars.length;
+        if (m > 0 && n > 0) {
+            const reviewProbability = (n / 4) / (m + n / 4);
+            pool = Math.random() < reviewProbability ? reviewChars.slice() : activeChars.slice();
+        } else if (n > 0) {
+            pool = reviewChars.slice();
+        } else {
+            pool = activeChars.slice();
         }
+        if (pool.length === 0) return null;
 
-        // ============================================================
-        // 泡泡
-        // ============================================================
-        function createBubble() {
-            let available = activeChars.filter(c => c !== lastChar);
-            if (available.length === 0) available = activeChars.slice();
-            const charVal = available[Math.floor(Math.random() * available.length)];
-            lastChar = charVal;
-            const x = W / 2 + (Math.random() - 0.5) * 100;
-            const y = H + 80;
-            const radius = Math.min(W, H) * 0.18;
-            const baseSpeed = (0.4 + Math.random() * 0.3) * bubbleSpeedMul;
-            return {
-                char: charVal,
-                x, y, radius,
-                speed: Math.max(0.15, baseSpeed),
-                angle: 0,
-                wobbleSpeed: 0.012 + Math.random() * 0.01,
-                wobbleAmplitude: 1.0 + Math.random() * 0.6,
-                alive: true,
-                bursting: false,
-                matched: false,
-                topTimer: 0
-            };
+        let available = pool.filter(c => c !== lastChar);
+        if (available.length === 0) available = pool.slice();
+        const charVal = available[Math.floor(Math.random() * available.length)];
+        lastChar = charVal;
+
+        const radius = Math.min(W, H) * 0.18;
+        const x = W / 2 + (Math.random() - 0.5) * 180;
+        const y = H + radius + 20;
+        const baseSpeed = (0.4 + Math.random() * 0.3) * bubbleSpeedMul;
+        const sprite = createBubbleSprite(charVal, x, y, radius, true);
+        bubbleLayer.addChild(sprite);
+
+        return {
+            char: charVal,
+            sprite: sprite,
+            x: x,
+            y: y,
+            radius: radius,
+            speed: Math.max(0.15, baseSpeed),
+            angle: 0,
+            wobbleSpeed: 0.01 + Math.random() * 0.02,
+            wobbleAmplitude: 2.5 + Math.random() * 1.6,
+            alive: true,
+            bursting: false,
+            matched: false,
+            topTimer: 0
+        };
+    }
+
+    // ---- 粒子 ----
+    function spawnParticles(x, y, color, count) {
+        count = count || 55;
+        const colors = [0xff6b6b, 0xffd93d, 0x6bcb77, 0x4d96ff, 0xff6bff, 0xffaa33, 0xff4757, 0x2ed573];
+        for (let i = 0; i < count; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 3 + Math.random() * 6;
+            const size = 3 + Math.random() * 7;
+            const c = color || colors[Math.floor(Math.random() * colors.length)];
+            const p = new PIXI.Graphics();
+            p.beginFill(c);
+            p.drawCircle(0, 0, size);
+            p.endFill();
+            p.x = x + (Math.random() - 0.5) * 14;
+            p.y = y + (Math.random() - 0.5) * 14;
+            p.alpha = 1;
+            particleLayer.addChild(p);
+            const spread = 0.9 + Math.random() * 0.3;
+            particles.push({
+                sprite: p,
+                x: p.x,
+                y: p.y,
+                vx: Math.cos(angle) * speed * spread,
+                vy: Math.sin(angle) * speed * spread,
+                life: 1.2 + Math.random() * 0.4,
+                decay: 0.012 + Math.random() * 0.02,
+                gravity: 0.04,
+                friction: 0.96 + Math.random() * 0.02,
+            });
         }
+    }
 
-        // ---- 粒子（减少数量，提升性能） ----
-        function spawnParticles(x, y) {
-            const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6bff', '#ffaa33'];
-            const count = 35; // 从60降到35
+    // ---- 车辆绘制 ----
+    function drawEmojiPixi(x, y, size, emoji) {
+        const container = new PIXI.Container();
+        container.x = x;
+        container.y = y;
+
+        const text = new PIXI.Text(emoji, {
+            fontSize: size * 1.8,
+            fontFamily: '"Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif',
+            align: 'center',
+            dropShadow: true,
+            dropShadowColor: '#000000',
+            dropShadowAlpha: 0.3,
+            dropShadowBlur: 12,
+        });
+        text.anchor.set(0.5);
+        container.addChild(text);
+        return container;
+    }
+
+    // ---- 奖励车辆列表 ----
+    const VEHICLES = [
+        // 无尾气奖励
+        { type: 'emoji', emoji: '🚂', hasExhaust: false },
+        { type: 'emoji', emoji: '🦈', hasExhaust: false },
+        { type: 'emoji', emoji: '🦀', hasExhaust: false },
+        { type: 'emoji', emoji: '🐠', hasExhaust: false },
+        { type: 'emoji', emoji: '🐢', hasExhaust: false },
+        { type: 'emoji', emoji: '🐡', hasExhaust: false },
+        { type: 'emoji', emoji: '🛹', hasExhaust: false },
+        { type: 'emoji', emoji: '🚲', hasExhaust: false },
+        // 有尾气奖励（默认朝向左边）
+        { type: 'emoji', emoji: '🚓', hasExhaust: true },
+        { type: 'emoji', emoji: '🚑', hasExhaust: true },
+        { type: 'emoji', emoji: '🚒', hasExhaust: true },
+        { type: 'emoji', emoji: '🏍️', hasExhaust: true },
+        { type: 'emoji', emoji: '🚚', hasExhaust: true },
+        { type: 'emoji', emoji: '🏎️', hasExhaust: true },
+    ];
+
+    // ---- 生成车辆 ----
+    function spawnCreature() {
+        const idx = Math.floor(Math.random() * VEHICLES.length);
+        const v = VEHICLES[idx];
+        const size = Math.min(W, H) * (0.20 + Math.random() * 0.06);
+        const hasExhaust = !!v.hasExhaust;
+        const fromLeft = !hasExhaust;
+        const y = H * 0.10 + Math.random() * H * 0.55;
+        const baseSpeed = (0.8 + Math.random() * 0.4) * creatureSpeedMul;
+
+        const sprite = drawEmojiPixi(0, 0, size, v.emoji);
+        sprite.scale.x = fromLeft ? -1 : 1;
+        sprite.x = fromLeft ? -size * 1.4 : W + size * 1.4;
+        sprite.y = y;
+        creatureLayer.addChild(sprite);
+
+        creature = {
+            sprite: sprite,
+            x: fromLeft ? -size * 1.4 : W + size * 1.4,
+            y: y,
+            size: size,
+            speed: Math.max(0.2, baseSpeed) * (fromLeft ? 1 : -1),
+            waveOffset: Math.random() * Math.PI * 2,
+            waveAmplitude: size * 0.02,
+            fromLeft: fromLeft,
+            alpha: 0,
+            exhaustTimer: 0,
+            hasExhaust: hasExhaust,
+        };
+        easterEggActive = true;
+        creaturePaused = true;
+        sprite.alpha = 0;
+    }
+
+    // ---- 更新车辆 ----
+    function updateCreature() {
+        if (!creature) return;
+        creature.alpha = Math.min(1, creature.alpha + 0.04);
+        creature.sprite.alpha = creature.alpha * 0.95;
+        creature.x += creature.speed;
+        creature.waveOffset += 0.03;
+        creature.y += Math.sin(creature.waveOffset) * creature.waveAmplitude * 0.04;
+        creature.sprite.x = creature.x;
+        creature.sprite.y = creature.y;
+        creature.exhaustTimer += 1;
+        if (creature.hasExhaust && creature.exhaustTimer % 6 === 0) {
+            const offsetX = creature.fromLeft ? -creature.size * 1.05 : creature.size * 1.05;
+            const offsetY = creature.size * 0.40 + 10;
+            const color = 0xffcc66;
+            const count = 6;
             for (let i = 0; i < count; i++) {
-                const angle = Math.random() * Math.PI * 2;
-                const speed = 1.5 + Math.random() * 6;
-                const size = 2 + Math.random() * 8;
+                const p = new PIXI.Graphics();
+                p.beginFill(color, 0.65 - Math.random() * 0.25);
+                const radius = 3 + Math.random() * 4;
+                p.drawCircle(0, 0, radius);
+                p.endFill();
+                p.x = creature.x + offsetX + (Math.random() - 0.5) * 6;
+                p.y = creature.y + offsetY + (Math.random() - 0.5) * 5;
+                particleLayer.addChild(p);
                 particles.push({
-                    x: x + (Math.random() - 0.5) * 12,
-                    y: y + (Math.random() - 0.5) * 12,
-                    vx: Math.cos(angle) * speed * (0.5 + Math.random()),
-                    vy: Math.sin(angle) * speed * (0.5 + Math.random()) - 1.5,
-                    radius: size * (0.5 + Math.random() * 0.5),
+                    sprite: p,
+                    x: p.x,
+                    y: p.y,
+                    vx: creature.fromLeft ? -1.1 - Math.random() * 0.5 : -0.8 - Math.random() * 0.2,
+                    vy: -0.4 + Math.random() * 0.6,
                     life: 1.0,
-                    decay: 0.01 + Math.random() * 0.025,
-                    color: colors[Math.floor(Math.random() * colors.length)],
-                    gravity: 0.04
+                    decay: 0.015 + Math.random() * 0.02,
+                    gravity: 0.01,
                 });
             }
         }
-
-        // ============================================================
-        // 操作
-        // ============================================================
-        function onCorrect() {
-            if (!bubble || bubble.bursting || !bubble.alive || bubble.matched) return;
-            if (creaturePaused) return;
-            bubble.matched = true;
-            bubble.bursting = true;
-            bubble.alive = false;
-            spawnParticles(bubble.x, bubble.y);
-            score++;
-
-            const milestone = Math.floor(score / triggerInterval);
-            if (milestone > lastMilestone && score % triggerInterval === 0 && !easterEggActive) {
-                lastMilestone = milestone;
-                spawnCreature();
-                if (bubble) { bubble.alive = false;
-                    bubble = null; }
-            }
-
-            setTimeout(() => {
-                if (gameRunning && !creaturePaused) bubble = createBubble();
-            }, 400);
-        }
-
-        function onWrong() {
-            if (!bubble || bubble.bursting || !bubble.alive || bubble.matched) return;
-            if (creaturePaused) return;
-            bubble.speed = Math.max(0.15, bubble.speed * 0.85);
-        }
-
-        // ---- 事件 ----
-        canvas.addEventListener('click', e => { if (!gameRunning) return;
-            onCorrect(); });
-        canvas.addEventListener('contextmenu', e => { e.preventDefault(); if (!gameRunning) return;
-            onWrong(); });
-        canvas.addEventListener('touchstart', e => {
-            if (!gameRunning) return;
-            e.preventDefault();
-            const touch = e.touches[0];
-            if (touch.clientX < W / 2) onCorrect();
-            else onWrong();
-        }, { passive: false });
-
-        document.addEventListener('keydown', e => {
-            if (!gameRunning) return;
-            if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') { e.preventDefault();
-                onCorrect(); } else if (e.key === 's' || e.key === 'S' || e.key === 'ArrowRight') { e
-                    .preventDefault();
-                onWrong(); }
-        });
-
-        // ---- 选项 ----
-        options.querySelectorAll('label').forEach(label => {
-            const cb = label.querySelector('input[type="checkbox"]');
-            label.addEventListener('click', function(e) {
-                if (e.target.tagName === 'INPUT') return;
-                cb.checked = !cb.checked;
-                updateLabelStyle(label, cb.checked);
-            });
-            cb.addEventListener('change', function() { updateLabelStyle(label, cb.checked); });
-            updateLabelStyle(label, cb.checked);
-        });
-
-        function updateLabelStyle(label, checked) {
-            label.classList.toggle('active', checked);
-        }
-
-        intervalSelect.addEventListener('change', function() {
-            triggerInterval = parseInt(this.value);
-        });
-
-        function getSpeedMul() {
-            bubbleSpeedMul = parseFloat(bubbleSpeedSlider.value);
-            creatureSpeedMul = parseFloat(creatureSpeedSlider.value);
-        }
-
-        // ============================================================
-        // 重置
-        // ============================================================
-        function resetGame() {
-            particles = [];
-            score = 0;
-            lastMilestone = 0;
-            lastChar = null;
+        const margin = creature.size * 1.8;
+        if ((creature.fromLeft && creature.x > W + margin) ||
+            (!creature.fromLeft && creature.x < -margin)) {
+            creatureLayer.removeChild(creature.sprite);
             creature = null;
             easterEggActive = false;
             creaturePaused = false;
-            if (bubble) bubble.alive = false;
-            getSpeedMul();
-            bubble = createBubble();
+            if (gameRunning && !bubble) bubble = createBubble();
         }
+    }
 
-        // ============================================================
-        // 更新
-        // ============================================================
-        function update() {
-            if (!gameRunning) return;
+    // ---- 操作 ----
+    function onCorrect() {
+        if (!bubble || bubble.bursting || !bubble.alive || bubble.matched) return;
+        if (creaturePaused) return;
+        bubble.matched = true;
+        bubble.bursting = true;
+        bubble.alive = false;
+        spawnParticles(bubble.x, bubble.y);
+        bubbleLayer.removeChild(bubble.sprite);
+        score++;
 
-            // 粒子更新（手动循环，避免 forEach 开销）
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                p.x += p.vx;
-                p.y += p.vy;
-                p.vy += p.gravity;
-                p.life -= p.decay;
-                p.radius *= 0.995;
-                if (p.life <= 0 || p.radius < 0.3) {
-                    particles.splice(i, 1);
-                }
+        const milestone = Math.floor(score / triggerInterval);
+        if (milestone > lastMilestone && score % triggerInterval === 0 && !easterEggActive) {
+            lastMilestone = milestone;
+            spawnCreature();
+            if (bubble) {
+                bubble.alive = false;
+                bubbleLayer.removeChild(bubble.sprite);
+                bubble = null;
             }
+        }
+        setTimeout(() => {
+            if (gameRunning && !creaturePaused) bubble = createBubble();
+        }, 400);
+    }
 
-            updateCreature();
-            if (creaturePaused) return;
+    function onWrong() {
+        if (!bubble || bubble.bursting || !bubble.alive || bubble.matched) return;
+        if (creaturePaused) return;
+    }
 
-            if (!bubble && gameRunning) { bubble = createBubble(); return; }
-            if (!bubble) return;
+    // ---- 事件 ----
+    app.view.addEventListener('click', () => {
+        if (!gameRunning) {
+            startGame();
+            return;
+        }
+        onCorrect();
+    });
+    app.view.addEventListener('contextmenu', (e) => { e.preventDefault(); if (!gameRunning) return;
+        onWrong(); });
+    app.view.addEventListener('touchstart', (e) => {
+        if (!gameRunning) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = app.view.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        if (x < W / 2) onCorrect();
+        else onWrong();
+    }, { passive: false });
+    document.addEventListener('keydown', (e) => {
+        if (!gameRunning) return;
+        if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') { e.preventDefault();
+            onCorrect(); } else if (e.key === 's' || e.key === 'S' || e.key === 'ArrowRight') { e
+                .preventDefault();
+            onWrong(); }
+    });
 
-            if (bubble.alive && !bubble.bursting) {
-                bubble.angle += bubble.wobbleSpeed;
-                const offsetX = Math.sin(bubble.angle) * bubble.wobbleAmplitude;
-                bubble.x += offsetX * 0.08;
-                bubble.y -= bubble.speed;
+    // ---- 双击返回 ----
+    let lastClickTime = 0;
 
-                if (bubble.y < bubble.radius + 20) {
-                    bubble.y = bubble.radius + 20;
-                    bubble.speed = 0;
-                    bubble.topTimer += 1 / 60;
-                    if (bubble.topTimer > 5.0) {
-                        bubble.alive = false;
-                        // 产生少量水花
-                        for (let i = 0; i < 10; i++) {
-                            const angle = Math.random() * Math.PI * 2;
-                            const speed = 0.5 + Math.random() * 1.5;
-                            particles.push({
-                                x: bubble.x + (Math.random() - 0.5) * 8,
-                                y: bubble.y - 8 + (Math.random() - 0.5) * 8,
-                                vx: Math.cos(angle) * speed,
-                                vy: Math.sin(angle) * speed - 0.5,
-                                radius: 1.5 + Math.random() * 3,
-                                life: 1.0,
-                                decay: 0.03 + Math.random() * 0.03,
-                                color: 'rgba(150,200,255,0.4)',
-                                gravity: 0.015
-                            });
-                        }
-                        setTimeout(() => {
-                            if (gameRunning && !creaturePaused && !bubble) {
-                                bubble = createBubble();
-                            }
-                        }, 350);
+    function goBackToMenu() {
+        if (!gameRunning) return;
+        gameRunning = false;
+        overlay.style.display = 'flex';
+        bubbleLayer.removeChildren();
+        particleLayer.removeChildren();
+        creatureLayer.removeChildren();
+        particles = [];
+        bubble = null;
+        creature = null;
+        easterEggActive = false;
+        creaturePaused = false;
+        hint.textContent = '✨ 已返回，调整后重新开始';
+        hint.style.opacity = '1';
+        setTimeout(() => { hint.style.opacity = '0'; }, 1500);
+    }
+    document.addEventListener('dblclick', goBackToMenu);
+    app.view.addEventListener('touchstart', function(e) {
+        const now = Date.now();
+        if (now - lastClickTime < 400) {
+            e.preventDefault();
+            goBackToMenu();
+            lastClickTime = 0;
+        } else {
+            lastClickTime = now;
+        }
+    }, { passive: false });
+
+    // ---- 重置 ----
+    function resetGame() {
+        particleLayer.removeChildren();
+        creatureLayer.removeChildren();
+        particles = [];
+        score = 0;
+        lastMilestone = 0;
+        lastChar = null;
+        creature = null;
+        easterEggActive = false;
+        creaturePaused = false;
+        if (bubble) {
+            bubbleLayer.removeChild(bubble.sprite);
+            bubble = null;
+        }
+        bubble = createBubble();
+    }
+
+    // ---- 更新 ----
+    function update() {
+        if (!gameRunning) return;
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vx *= p.friction || 0.98;
+            p.vy += p.gravity || 0.04;
+            p.life -= p.decay;
+            p.sprite.alpha = Math.max(0, p.life);
+            p.sprite.x = p.x;
+            p.sprite.y = p.y;
+            if (p.life <= 0) {
+                particleLayer.removeChild(p.sprite);
+                particles.splice(i, 1);
+            }
+        }
+        updateCreature();
+        if (creaturePaused) return;
+        if (!bubble && gameRunning) { bubble = createBubble(); return; }
+        if (!bubble) return;
+        if (bubble.alive && !bubble.bursting) {
+            bubble.angle += bubble.wobbleSpeed;
+            const offsetX = Math.sin(bubble.angle) * bubble.wobbleAmplitude;
+            bubble.x += offsetX * 0.08;
+            bubble.y -= bubble.speed;
+            bubble.sprite.x = bubble.x;
+            bubble.sprite.y = bubble.y;
+            bubble.sprite.rotation = Math.sin(bubble.angle) * 0.05;
+
+            if (bubble.y < bubble.radius + 20) {
+                bubble.y = bubble.radius + 20;
+                bubble.speed = 0;
+                bubble.topTimer += 1 / 60;
+                if (bubble.topTimer > 5.0) {
+                    bubble.alive = false;
+                    bubble.bursting = true;
+                    for (let i = 0; i < 10; i++) {
+                        const angle = Math.random() * Math.PI * 2;
+                        const speed = 0.5 + Math.random() * 1.5;
+                        const p = new PIXI.Graphics();
+                        p.beginFill(0x96c8ff, 0.4);
+                        p.drawCircle(0, 1.5 + Math.random() * 3);
+                        p.endFill();
+                        p.x = bubble.x + (Math.random() - 0.5) * 8;
+                        p.y = bubble.y - 8 + (Math.random() - 0.5) * 8;
+                        particleLayer.addChild(p);
+                        particles.push({
+                            sprite: p,
+                            vx: Math.cos(angle) * speed,
+                            vy: Math.sin(angle) * speed - 0.5,
+                            life: 1.0,
+                            decay: 0.03 + Math.random() * 0.03,
+                            gravity: 0.015,
+                        });
                     }
-                } else {
-                    bubble.topTimer = 0;
+                    bubbleLayer.removeChild(bubble.sprite);
+                    setTimeout(() => {
+                        if (gameRunning && !creaturePaused && !bubble) {
+                            bubble = createBubble();
+                        }
+                    }, 350);
                 }
+            } else {
+                bubble.topTimer = 0;
             }
         }
+    }
 
-        // ============================================================
-        // 绘图（优化：减少不必要的绘制调用）
-        // ============================================================
-        function draw() {
-            ctx.clearRect(0, 0, W, H);
+    // ---- 渲染 UI ----
+    function renderUI() {
+        uiLayer.removeChildren();
+        const scoreText = new PIXI.Text(`⭐ ${score}`, {
+            fontSize: Math.min(W, H) * 0.04,
+            fill: '#ffffff',
+            fontFamily: 'Arial',
+            fontWeight: 'bold',
+            dropShadow: true,
+            dropShadowColor: '#000000',
+            dropShadowAlpha: 0.5,
+            dropShadowBlur: 8,
+        });
+        scoreText.x = 18;
+        scoreText.y = 18;
+        uiLayer.addChild(scoreText);
 
-            // 渐变背景
-            const grad = ctx.createLinearGradient(0, 0, 0, H);
-            grad.addColorStop(0, '#0a3a5a');
-            grad.addColorStop(0.5, '#1a5a7a');
-            grad.addColorStop(1, '#0d2b3a');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, W, H);
-
-            // 水纹（简化，减少椭圆数量）
-            ctx.fillStyle = 'rgba(255,255,255,0.02)';
-            const time = Date.now() / 2000;
-            for (let i = 0; i < 3; i++) {
-                const y = (H * 0.3) + i * 100 + Math.sin(time + i * 1.2) * 15;
-                ctx.beginPath();
-                ctx.ellipse(W / 2 + Math.sin(time * 0.7 + i * 2) * 60, y, W * 0.45, 12, 0, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            // 沙地
-            ctx.fillStyle = '#4a6a5a';
-            ctx.fillRect(0, H - 30, W, 30);
-            ctx.fillStyle = '#5a7a6a';
-            for (let i = 0; i < 12; i++) {
-                const x = i * 80 + Math.sin(i * 0.7) * 10;
-                ctx.beginPath();
-                ctx.arc(x, H - 14 + Math.sin(i * 0.5) * 3, 15, 0, Math.PI, true);
-                ctx.fill();
-            }
-
-            // 水草（简化：减少点数，减少数量）
-            ctx.strokeStyle = '#2a7a4a';
-            ctx.lineWidth = 4;
-            const time2 = Date.now() / 1800;
-            for (let i = 0; i < 8; i++) {
-                const baseX = 50 + i * 100 + Math.sin(i * 1.2) * 12;
-                const baseY = H - 16;
-                ctx.beginPath();
-                ctx.moveTo(baseX, baseY);
-                for (let t = 0; t < 12; t++) {
-                    const y = baseY - t * 5;
-                    const x = baseX + Math.sin(t * 0.35 + time2 + i * 0.8) * (5 + t * 0.35);
-                    ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-            }
-
-            // ---- 泡泡 ----
-            if (!creaturePaused && bubble && bubble.alive && !bubble.bursting) {
-                drawBubble(bubble.x, bubble.y, bubble.radius, bubble.char, true);
-            }
-
-            // ---- 粒子 ----
-            for (let i = 0; i < particles.length; i++) {
-                const p = particles[i];
-                ctx.globalAlpha = p.life;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
-                ctx.fill();
-                ctx.shadowColor = p.color;
-                ctx.shadowBlur = 6;
-                ctx.fill();
-                ctx.shadowBlur = 0;
-            }
-            ctx.globalAlpha = 1;
-
-            // ---- 交通工具 ----
-            drawCreature();
-
-            // ---- 得分 ----
-            ctx.fillStyle = 'rgba(255,255,255,0.85)';
-            ctx.font = `bold ${Math.min(W, H) * 0.04}px Arial`;
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'top';
-            ctx.shadowColor = 'rgba(0,0,0,0.5)';
-            ctx.shadowBlur = 10;
-            ctx.fillText(`⭐ ${score}`, 18, 18);
-            ctx.shadowBlur = 0;
-
-            // ---- 进度提示 ----
-            const nextMilestone = (Math.floor(score / triggerInterval) + 1) * triggerInterval;
-            const remain = nextMilestone - score;
-            if (remain > 0 && remain <= triggerInterval && !creaturePaused && !easterEggActive) {
-                ctx.fillStyle = 'rgba(255,255,255,0.18)';
-                ctx.font = `${Math.min(W, H) * 0.016}px Arial`;
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'top';
-                ctx.fillText(`🚀 再答对 ${remain} 次`, 18, 18 + Math.min(W, H) * 0.045);
-            }
-
-            // ---- 动物出现 ----
-            if (creaturePaused && creature) {
-                ctx.fillStyle = 'rgba(255,255,255,0.25)';
-                ctx.font = `bold ${Math.min(W, H) * 0.03}px Arial`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'bottom';
-                ctx.shadowColor = 'rgba(0,0,0,0.8)';
-                ctx.shadowBlur = 12;
-                ctx.fillText(`✨ 来啦！`, W / 2, H - 50);
-                ctx.shadowBlur = 0;
-            }
+        const nextMilestone = (Math.floor(score / triggerInterval) + 1) * triggerInterval;
+        const remain = nextMilestone - score;
+        if (remain > 0 && remain <= triggerInterval && !creaturePaused && !easterEggActive) {
+            const progressText = new PIXI.Text(`🏁 再答对 ${remain} 次`, {
+                fontSize: Math.min(W, H) * 0.016,
+                fill: 'rgba(255,255,255,0.25)',
+                fontFamily: 'Arial',
+            });
+            progressText.x = 18;
+            progressText.y = 18 + Math.min(W, H) * 0.045;
+            uiLayer.addChild(progressText);
         }
 
-        // ---- 绘制单个泡泡（光斑改为角落狭长形） ----
-        function drawBubble(x, y, radius, charVal, isMain) {
-            ctx.save();
+    }
 
-            // 主体渐变
-            const grad = ctx.createRadialGradient(x - radius * 0.15, y - radius * 0.15, radius * 0.05, x, y, radius);
-            grad.addColorStop(0, 'rgba(255,255,255,0.80)');
-            grad.addColorStop(0.3, isMain ? 'rgba(120,210,255,0.55)' : 'rgba(150,200,200,0.35)');
-            grad.addColorStop(0.7, isMain ? 'rgba(60,160,255,0.35)' : 'rgba(80,160,180,0.20)');
-            grad.addColorStop(1, 'rgba(20,80,150,0.15)');
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI * 2);
-            ctx.fillStyle = grad;
-            ctx.fill();
+    // ---- 游戏循环 ----
+    function gameLoop() {
+        drawBackground();
+        update();
+        renderUI();
+        requestAnimationFrame(gameLoop);
+    }
 
-            // 边框
-            ctx.strokeStyle = isMain ? 'rgba(255,255,255,0.40)' : 'rgba(200,200,200,0.20)';
-            ctx.lineWidth = isMain ? 2.5 : 1.5;
-            ctx.stroke();
-
-            // ---- 光斑1：左上角边缘 ----
-            ctx.save();
-            ctx.translate(x - radius * 0.52, y - radius * 0.52);
-            ctx.rotate(-0.5);
-            const gradSpot = ctx.createRadialGradient(0, 0, 0, 0, 0, radius * 0.30);
-            gradSpot.addColorStop(0, 'rgba(255,255,255,0.45)');
-            gradSpot.addColorStop(0.4, 'rgba(255,255,255,0.12)');
-            gradSpot.addColorStop(1, 'rgba(255,255,255,0)');
-            ctx.fillStyle = gradSpot;
-            ctx.beginPath();
-            ctx.ellipse(0, 0, radius * 0.30, radius * 0.09, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-
-            // ---- 光斑2：左下角边缘 ----
-            ctx.save();
-            ctx.translate(x - radius * 0.48, y + radius * 0.48);
-            ctx.rotate(0.3);
-            const gradSpot2 = ctx.createRadialGradient(0, 0, 0, 0, 0, radius * 0.16);
-            gradSpot2.addColorStop(0, 'rgba(255,255,255,0.25)');
-            gradSpot2.addColorStop(1, 'rgba(255,255,255,0)');
-            ctx.fillStyle = gradSpot2;
-            ctx.beginPath();
-            ctx.ellipse(0, 0, radius * 0.16, radius * 0.05, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-
-            // ---- 文字 ----
-            ctx.fillStyle = isMain ? '#ffffff' : 'rgba(255,255,255,0.50)';
-            ctx.font = `bold ${radius * 1.2}px Arial, "Helvetica", "PingFang SC", sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.shadowColor = 'rgba(0,0,0,0.35)';
-            ctx.shadowBlur = 12;
-            ctx.fillText(charVal, x, y + 3);
-            ctx.shadowBlur = 0;
-
-            ctx.restore();
+    // ---- 启动 ----
+    function startGame() {
+        const checked = activeChars.length;
+        if (checked === 0) {
+            hint.textContent = '⚠️ 请至少选一个！';
+            hint.style.opacity = '1';
+            setTimeout(() => { hint.style.opacity = '0'; }, 1200);
+            return;
         }
+        triggerInterval = parseInt(intervalSelect.value);
+        bubbleSpeedMul = parseInt(bubbleSpeedSlider.value, 10);
+        creatureSpeedMul = parseInt(creatureSpeedSlider.value, 10);
+        if (gameRunning) return;
+        overlay.style.display = 'none';
+        gameRunning = true;
+        resetGame();
+    }
 
-        // ============================================================
-        // 主循环
-        // ============================================================
-        function gameLoop() {
-            update();
-            draw();
-            requestAnimationFrame(gameLoop);
-        }
-
-        // ============================================================
-        // 启动
-        // ============================================================
-        function startGame() {
-            const checked = options.querySelectorAll('input[type="checkbox"]:checked');
-            if (checked.length === 0) {
-                hint.textContent = '⚠️ 请至少选一个！';
-                hint.style.opacity = '1';
-                setTimeout(() => { hint.style.opacity = '0'; }, 1200);
-                return;
-            }
-            activeChars = [];
-            checked.forEach(cb => activeChars.push(cb.value));
-            lastChar = null;
-            triggerInterval = parseInt(intervalSelect.value);
-            getSpeedMul();
-
-            if (gameRunning) return;
-            overlay.style.display = 'none';
+    startBtn.addEventListener('click', startGame);
+    testRewardBtn.addEventListener('click', function() {
+        if (!gameRunning) {
             gameRunning = true;
+            overlay.style.display = 'none';
             resetGame();
-            resizeCanvas();
         }
+        if (!creature && !easterEggActive) {
+            spawnCreature();
+        }
+    });
 
-        startBtn.addEventListener('click', startGame);
-        canvas.addEventListener('click', function(e) { if (!gameRunning) startGame(); });
-        window.onload = function() { resizeCanvas(); };
+    window.onload = async function() {
+        await loadWords();
+        renderWords();
+        bubbleSpeedDisplay.textContent = bubbleSpeedSlider.value;
+        creatureSpeedDisplay.textContent = creatureSpeedSlider.value;
+        drawBackground();
         gameLoop();
+    };
 
-        console.log('🌟 识字泡泡 · 性能优化版');
-    </script>
+    window.addEventListener('resize', () => {
+        W = window.innerWidth;
+        H = window.innerHeight;
+        drawBackground();
+    });
+</script>
 </body>
 </html>
