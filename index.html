@@ -382,6 +382,7 @@
     let triggerInterval = 10;
     let bubbleSpeedMul = 6;
     let creatureSpeedMul = 6;
+    let nextBubbleMode = null;
     let gameRunning = false;
 
     async function loadWords() {
@@ -644,7 +645,7 @@
     }
 
     // ---- 泡泡 ----
-    function createBubble() {
+    function createBubble(mode = null) {
         let pool = [];
         const m = activeChars.length;
         const n = reviewChars.length;
@@ -670,7 +671,10 @@
         const sprite = createBubbleSprite(charVal, x, y, radius, true);
         bubbleLayer.addChild(sprite);
 
-        return {
+        const bubbleMode = mode || nextBubbleMode || 'normal';
+        nextBubbleMode = null;
+
+        const bubbleObj = {
             char: charVal,
             sprite: sprite,
             x: x,
@@ -683,8 +687,49 @@
             alive: true,
             bursting: false,
             matched: false,
-            topTimer: 0
+            topTimer: 0,
+            mode: bubbleMode,
         };
+
+        if (bubbleMode === 'mischief') {
+            const edge = Math.floor(Math.random() * 4);
+            const speed = 14 + Math.random() * 4;
+            if (edge === 0) {
+                bubbleObj.x = bubbleObj.radius + 6;
+                bubbleObj.y = bubbleObj.radius + Math.random() * (H - bubbleObj.radius * 2);
+                bubbleObj.vx = speed;
+                bubbleObj.vy = (Math.random() * 2 - 1) * (speed * 0.6);
+            } else if (edge === 1) {
+                bubbleObj.x = W - bubbleObj.radius - 6;
+                bubbleObj.y = bubbleObj.radius + Math.random() * (H - bubbleObj.radius * 2);
+                bubbleObj.vx = -speed;
+                bubbleObj.vy = (Math.random() * 2 - 1) * (speed * 0.6);
+            } else if (edge === 2) {
+                bubbleObj.x = bubbleObj.radius + Math.random() * (W - bubbleObj.radius * 2);
+                bubbleObj.y = bubbleObj.radius + 6;
+                bubbleObj.vx = (Math.random() * 2 - 1) * (speed * 0.6);
+                bubbleObj.vy = speed;
+            } else {
+                bubbleObj.x = bubbleObj.radius + Math.random() * (W - bubbleObj.radius * 2);
+                bubbleObj.y = H - bubbleObj.radius - 6;
+                bubbleObj.vx = (Math.random() * 2 - 1) * (speed * 0.6);
+                bubbleObj.vy = -speed;
+            }
+            sprite.x = bubbleObj.x;
+            sprite.y = bubbleObj.y;
+            bubbleObj.phase = 'bounce';
+            bubbleObj.phaseTimer = 0;
+            bubbleObj.bounceDuration = 3;
+            bubbleObj.spiralDuration = 3;
+            bubbleObj.spiralTimer = 0;
+            bubbleObj.spiralAngle = 0;
+            bubbleObj.initialSpiralRadius = 0;
+            bubbleObj.spiralThetaStart = 0;
+            bubbleObj.spiralOmega = (Math.PI * 2.2 + Math.random() * Math.PI * 0.8) / 60;
+            bubbleObj.spiralDecay = 0;
+        }
+
+        return bubbleObj;
     }
 
     // ---- 粒子 ----
@@ -852,6 +897,10 @@
         bubbleLayer.removeChild(bubble.sprite);
         score++;
 
+        if (score === 13 || score === 23) {
+            nextBubbleMode = 'mischief';
+        }
+
         const milestone = Math.floor(score / triggerInterval);
         if (milestone > lastMilestone && score % triggerInterval === 0 && !easterEggActive) {
             lastMilestone = milestone;
@@ -971,49 +1020,107 @@
         if (!bubble && gameRunning) { bubble = createBubble(); return; }
         if (!bubble) return;
         if (bubble.alive && !bubble.bursting) {
-            bubble.angle += bubble.wobbleSpeed;
-            const offsetX = Math.sin(bubble.angle) * bubble.wobbleAmplitude;
-            bubble.x += offsetX * 0.08;
-            bubble.y -= bubble.speed;
-            bubble.sprite.x = bubble.x;
-            bubble.sprite.y = bubble.y;
-            bubble.sprite.rotation = Math.sin(bubble.angle) * 0.05;
-
-            if (bubble.y < bubble.radius + 20) {
-                bubble.y = bubble.radius + 20;
-                bubble.speed = 0;
-                bubble.topTimer += 1 / 60;
-                if (bubble.topTimer > 5.0) {
-                    bubble.alive = false;
-                    bubble.bursting = true;
-                    for (let i = 0; i < 10; i++) {
-                        const angle = Math.random() * Math.PI * 2;
-                        const speed = 0.5 + Math.random() * 1.5;
-                        const p = new PIXI.Graphics();
-                        p.beginFill(0x96c8ff, 0.4);
-                        p.drawCircle(0, 1.5 + Math.random() * 3);
-                        p.endFill();
-                        p.x = bubble.x + (Math.random() - 0.5) * 8;
-                        p.y = bubble.y - 8 + (Math.random() - 0.5) * 8;
-                        particleLayer.addChild(p);
-                        particles.push({
-                            sprite: p,
-                            vx: Math.cos(angle) * speed,
-                            vy: Math.sin(angle) * speed - 0.5,
-                            life: 1.0,
-                            decay: 0.03 + Math.random() * 0.03,
-                            gravity: 0.015,
-                        });
+            if (bubble.mode === 'mischief') {
+                bubble.phaseTimer += 1 / 60;
+                if (bubble.phase === 'bounce') {
+                    bubble.vx += (Math.random() * 2 - 1) * 0.6;
+                    bubble.vy += (Math.random() * 2 - 1) * 0.6;
+                    const speed = Math.sqrt(bubble.vx * bubble.vx + bubble.vy * bubble.vy);
+                    if (speed > 16) {
+                        bubble.vx *= 16 / speed;
+                        bubble.vy *= 16 / speed;
                     }
-                    bubbleLayer.removeChild(bubble.sprite);
-                    setTimeout(() => {
-                        if (gameRunning && !creaturePaused && !bubble) {
-                            bubble = createBubble();
-                        }
-                    }, 350);
+                    bubble.x += bubble.vx;
+                    bubble.y += bubble.vy;
+                    if (bubble.x - bubble.radius < 0) {
+                        bubble.x = bubble.radius;
+                        bubble.vx = Math.abs(bubble.vx) * 0.96;
+                    } else if (bubble.x + bubble.radius > W) {
+                        bubble.x = W - bubble.radius;
+                        bubble.vx = -Math.abs(bubble.vx) * 0.96;
+                    }
+                    if (bubble.y - bubble.radius < 0) {
+                        bubble.y = bubble.radius;
+                        bubble.vy = Math.abs(bubble.vy) * 0.96;
+                    } else if (bubble.y + bubble.radius > H) {
+                        bubble.y = H - bubble.radius;
+                        bubble.vy = -Math.abs(bubble.vy) * 0.96;
+                    }
+                    if (bubble.phaseTimer >= bubble.bounceDuration) {
+                        bubble.phase = 'spiral';
+                        bubble.phaseTimer = 0;
+                        bubble.spiralTimer = 0;
+                        const dx = W / 2 - bubble.x;
+                        const dy = H / 2 - bubble.y;
+                        bubble.initialSpiralRadius = Math.sqrt(dx * dx + dy * dy);
+                        bubble.spiralAngle = Math.atan2(dy, dx);
+                        bubble.spiralThetaStart = bubble.spiralAngle;
+                        const totalDelta = bubble.spiralOmega * bubble.spiralDuration * 60;
+                        bubble.spiralDecay = Math.log(Math.max(bubble.initialSpiralRadius / 8, 1)) / totalDelta;
+                    }
+                } else if (bubble.phase === 'spiral') {
+                    bubble.spiralTimer += 1 / 60;
+                    bubble.spiralAngle += bubble.spiralOmega;
+                    const deltaTheta = bubble.spiralAngle - bubble.spiralThetaStart;
+                    const r = bubble.initialSpiralRadius * Math.exp(-bubble.spiralDecay * deltaTheta);
+                    bubble.x = W / 2 - r * Math.cos(bubble.spiralAngle);
+                    bubble.y = H / 2 - r * Math.sin(bubble.spiralAngle);
+                    if (bubble.spiralTimer >= bubble.spiralDuration || r < 18) {
+                        bubble.mode = 'normal';
+                        bubble.angle = 0;
+                        bubble.wobbleAmplitude = 2.5 + Math.random() * 1.6;
+                        bubble.wobbleSpeed = 0.01 + Math.random() * 0.02;
+                        bubble.speed = Math.max(0.15, (0.4 + Math.random() * 0.3) * bubbleSpeedMul);
+                    }
                 }
+                bubble.sprite.x = bubble.x;
+                bubble.sprite.y = bubble.y;
+                bubble.sprite.rotation = 0;
             } else {
-                bubble.topTimer = 0;
+                bubble.angle += bubble.wobbleSpeed;
+                const offsetX = Math.sin(bubble.angle) * bubble.wobbleAmplitude;
+                bubble.x += offsetX * 0.08;
+                bubble.y -= bubble.speed;
+                bubble.sprite.x = bubble.x;
+                bubble.sprite.y = bubble.y;
+                bubble.sprite.rotation = Math.sin(bubble.angle) * 0.05;
+
+                if (bubble.y < bubble.radius + 20) {
+                    bubble.y = bubble.radius + 20;
+                    bubble.speed = 0;
+                    bubble.topTimer += 1 / 60;
+                    if (bubble.topTimer > 5.0) {
+                        bubble.alive = false;
+                        bubble.bursting = true;
+                        for (let i = 0; i < 10; i++) {
+                            const angle = Math.random() * Math.PI * 2;
+                            const speed = 0.5 + Math.random() * 1.5;
+                            const p = new PIXI.Graphics();
+                            p.beginFill(0x96c8ff, 0.4);
+                            p.drawCircle(0, 1.5 + Math.random() * 3);
+                            p.endFill();
+                            p.x = bubble.x + (Math.random() - 0.5) * 8;
+                            p.y = bubble.y - 8 + (Math.random() - 0.5) * 8;
+                            particleLayer.addChild(p);
+                            particles.push({
+                                sprite: p,
+                                vx: Math.cos(angle) * speed,
+                                vy: Math.sin(angle) * speed - 0.5,
+                                life: 1.0,
+                                decay: 0.03 + Math.random() * 0.03,
+                                gravity: 0.015,
+                            });
+                        }
+                        bubbleLayer.removeChild(bubble.sprite);
+                        setTimeout(() => {
+                            if (gameRunning && !creaturePaused && !bubble) {
+                                bubble = createBubble();
+                            }
+                        }, 350);
+                    }
+                } else {
+                    bubble.topTimer = 0;
+                }
             }
         }
     }
