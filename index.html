@@ -364,25 +364,52 @@
             creatureSpeed: 4,
         },
         new_words: [
-            { text: '人', selected: true },
-            { text: '火', selected: true },
-            { text: '雨', selected: true },
-            { text: '风', selected: true },
-            { text: '兔', selected: true },
-            { text: '月', selected: false },
-            { text: '羊', selected: false },
-            { text: '门', selected: false },
-            { text: '电', selected: false },
-            { text: '中', selected: false },
-            { text: '众', selected: false },
-            { text: '火车', selected: true },
-            { text: '恐龙', selected: true },
-            { text: '飞机', selected: true },
-            { text: '跑车', selected: false },
+            { text: '羊', selected: true },
+            { text: '门', selected: true },
+            { text: '电', selected: true },
+            { text: '中', selected: true },
+            { text: '众', selected: true },
+            { text: '云', selected: true },
+            { text: '马', selected: true },
+            { text: '水', selected: false },
+            { text: '石', selected: false },
+            { text: '鸟', selected: false },
+            { text: '花', selected: false },
+            { text: '树', selected: false },
+            { text: '虫', selected: false },
+            { text: '象', selected: false },
+            { text: '虎', selected: false },
+            { text: '熊', selected: false },
+            { text: '木', selected: false },
+            { text: '伞', selected: false },
+            { text: '雪', selected: false },
+            { text: '手', selected: false },
+            { text: '头', selected: false },
+            { text: '眼', selected: false },
+            { text: '耳', selected: false },
+            { text: '彩虹', selected: false },
+            { text: '爱心', selected: false },
+
         ],
         review_words: [
-            '6', '9', '麦', '田', '大', '小', '车', '山', '鱼'
+            '6', '9', '麦', '田', '大', '小', '车', '山', 
+            '鱼', '人', '雨', '风', '兔', '月', '火', '恐龙', 
+            '飞机'
         ],
+        emoji_dict: {
+            '羊': '🐑', '门': '🚪', '电': '⚡', '力': '💪',
+            '马': '🐎', '雪': '❄️', '云': '☁️', '水': '💧', 
+            '鸟': '🐦', '花': '🌸', '树': '🌳', '虫': '🐛',
+            '木': '🪵', '火': '🔥', '兔': '🐇', '月': '🌙',
+            '伞': '☂️', '风': '💨', '鱼': '🐟', '车': '🚗',
+            '彩虹': '🌈', '气球': '🎈', '老师': '👩🏻‍🏫', '爱心': '❤️',
+            '手': '✋', '头': '🧒🏻', '眼': '👁️', '耳': '👂',
+            '开': '🔓', '关': '🔒', '上': '⬆️', '下': '⬇️',
+            '牛': '🐮', '猪': '🐷', '鸡': '🐓', '狗': '🐕',
+            '众': '👨‍👧‍👧', '牙': '🦷', '熊': '🐻',
+            '恐龙': '🦖', '飞机': '✈️', '医生': '👩🏻‍⚕️', 
+            '山': '⛰️', '石': '🪨', '象': '🐘', '虎': '🐯'
+        }
     };
 
     const overlay = document.getElementById('overlay');
@@ -539,11 +566,13 @@
     const bubbleLayer = new PIXI.Container();
     const particleLayer = new PIXI.Container();
     const creatureLayer = new PIXI.Container();
+    const effectLayer = new PIXI.Container();
     const uiLayer = new PIXI.Container();
     app.stage.addChild(bgLayer);
     app.stage.addChild(bubbleLayer);
     app.stage.addChild(particleLayer);
     app.stage.addChild(creatureLayer);
+    app.stage.addChild(effectLayer);
     app.stage.addChild(uiLayer);
 
     // ---- 游戏状态 ----
@@ -552,6 +581,8 @@
     let bubble = null;
     let particles = [];
     let creatures = [];
+    let emojiEffects = [];
+    let pendingPostEffectAction = null;
     let creaturePaused = false;
     let easterEggActive = false;
 
@@ -630,17 +661,11 @@
         container.y = y;
 
         const g = new PIXI.Graphics();
-        g.lineStyle(2, 0xffffff, isMain ? 0.5 : 0.25);
-        g.beginFill(0xffffff, 0.1);
+        g.lineStyle(2, 0xffffff, isMain ? 0.3 : 0.18);
+        g.beginFill(0xffffff, 0.08);
         g.drawCircle(0, 0, radius);
         g.endFill();
         container.addChild(g);
-
-        const g2 = new PIXI.Graphics();
-        g2.beginFill(0xffffff, 0.3);
-        g2.drawCircle(-radius * 0.15, -radius * 0.15, radius * 0.6);
-        g2.endFill();
-        container.addChild(g2);
 
         const text = new PIXI.Text(charVal, {
             fontSize: radius * 1.2,
@@ -650,24 +675,14 @@
             fontStyle: 'normal',
             align: 'center',
             dropShadow: true,
-            dropShadowColor: '#000000',
-            dropShadowAlpha: 0.18,
-            dropShadowBlur: 4,
+            dropShadowColor: '#0f2f42',
+            dropShadowAlpha: 0.45,
+            dropShadowBlur: 6,
+            dropShadowDistance: 1,
         });
         text.anchor.set(0.5);
         container.addChild(text);
 
-        const spot = new PIXI.Graphics();
-        spot.beginFill(0xffffff, 0.45);
-        spot.drawEllipse(-radius * 0.4, -radius * 0.4, radius * 0.25, radius * 0.07);
-        spot.endFill();
-        container.addChild(spot);
-
-        const spot2 = new PIXI.Graphics();
-        spot2.beginFill(0xffffff, 0.25);
-        spot2.drawEllipse(-radius * 0.35, radius * 0.4, radius * 0.15, radius * 0.04);
-        spot2.endFill();
-        container.addChild(spot2);
 
         return container;
     }
@@ -678,7 +693,7 @@
         const m = activeChars.length;
         const n = reviewChars.length;
         if (m > 0 && n > 0) {
-            const reviewProbability = (n / 4) / (m + n / 4);
+            const reviewProbability = (n / 10) / (m + n / 10);
             pool = Math.random() < reviewProbability ? reviewChars.slice() : activeChars.slice();
         } else if (n > 0) {
             pool = reviewChars.slice();
@@ -789,6 +804,104 @@
                 gravity: 0.04,
                 friction: 0.96 + Math.random() * 0.02,
             });
+        }
+    }
+
+    // ---- 破裂 emoji 特效 ----
+    function spawnEmojiEffect(charVal, x, y, size, onComplete) {
+        const emoji = WORD_CONFIG.emoji_dict?.[charVal];
+        if (!emoji) {
+            onComplete?.();
+            return;
+        }
+
+        const container = new PIXI.Container();
+        container.x = x;
+        container.y = y;
+        container.alpha = 1;
+        container.scale.set(1);
+        container.rotation = 0;
+
+        const text = new PIXI.Text(emoji, {
+            fontSize: size * 1.2,
+            fontFamily: '"Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif',
+            align: 'center',
+            dropShadow: true,
+            dropShadowColor: '#000000',
+            dropShadowAlpha: 0.28,
+            dropShadowBlur: 6,
+        });
+        text.anchor.set(0.5);
+        container.addChild(text);
+        effectLayer.addChild(container);
+
+        const modes = ['grow', 'rotate', 'blink'];
+        const effect = {
+            container,
+            text,
+            mode: modes[Math.floor(Math.random() * modes.length)],
+            phase: 'static',
+            timer: 0,
+            staticDuration: 1.0,
+            animationDuration: 0.7,
+            onComplete,
+        };
+        emojiEffects.push(effect);
+    }
+
+    function queuePostEffectAction(action) {
+        if (!action) return;
+        if (pendingPostEffectAction) {
+            const previousAction = pendingPostEffectAction;
+            pendingPostEffectAction = () => {
+                previousAction();
+                action();
+            };
+        } else {
+            pendingPostEffectAction = action;
+        }
+    }
+
+    function runPendingPostEffectAction() {
+        if (!pendingPostEffectAction) return;
+        const action = pendingPostEffectAction;
+        pendingPostEffectAction = null;
+        action();
+    }
+
+    function updateEmojiEffects(deltaTime = 1 / 60) {
+        for (let i = emojiEffects.length - 1; i >= 0; i--) {
+            const effect = emojiEffects[i];
+            effect.timer += deltaTime;
+
+            if (effect.phase === 'static') {
+                if (effect.timer >= effect.staticDuration) {
+                    effect.phase = 'anim';
+                    effect.timer = 0;
+                }
+                continue;
+            }
+
+            if (effect.phase === 'anim') {
+                const progress = Math.min(1, effect.timer / effect.animationDuration);
+                if (effect.mode === 'grow') {
+                    const scale = 1 + Math.sin(progress * Math.PI * 2) * 0.08;
+                    effect.container.scale.set(scale);
+                } else if (effect.mode === 'rotate') {
+                    effect.container.rotation = Math.sin(progress * Math.PI * 2) * 0.18;
+                } else if (effect.mode === 'blink') {
+                    const blink = (Math.floor(progress * 4) % 2 === 0) ? 1 : 0.2;
+                    effect.container.alpha = blink;
+                }
+
+                if (effect.timer >= effect.animationDuration) {
+                    effectLayer.removeChild(effect.container);
+                    emojiEffects.splice(i, 1);
+                    if (emojiEffects.length === 0) {
+                        runPendingPostEffectAction();
+                    }
+                }
+            }
         }
     }
 
@@ -948,19 +1061,29 @@
         if (creatures.length === 0) {
             easterEggActive = false;
             creaturePaused = false;
-            if (gameRunning && !bubble) bubble = createBubble();
+            if (gameRunning && !bubble && emojiEffects.length === 0) bubble = createBubble();
         }
     }
 
     // ---- 操作 ----
+    function scheduleNextBubble(delay = 0) {
+        setTimeout(() => {
+            if (gameRunning && !creaturePaused && !bubble && emojiEffects.length === 0) {
+                bubble = createBubble();
+            }
+        }, delay);
+    }
+
     function onCorrect() {
         if (!bubble || bubble.bursting || !bubble.alive || bubble.matched) return;
         if (creaturePaused) return;
-        bubble.matched = true;
-        bubble.bursting = true;
-        bubble.alive = false;
-        spawnParticles(bubble.x, bubble.y);
-        bubbleLayer.removeChild(bubble.sprite);
+        const poppedBubble = bubble;
+        poppedBubble.matched = true;
+        poppedBubble.bursting = true;
+        poppedBubble.alive = false;
+        spawnParticles(poppedBubble.x, poppedBubble.y);
+        bubbleLayer.removeChild(poppedBubble.sprite);
+        bubble = null;
         score++;
 
         if (score === 13 || score === 23) {
@@ -970,32 +1093,46 @@
         const milestone = Math.floor(score / triggerInterval);
         if (score === 30 && !easterEggActive) {
             lastMilestone = milestone;
-            spawnCreature({
-                count: 10,
-                hasExhaust: Math.random() < 0.5,
-                direction: Math.random() < 0.5 ? 'left' : 'right',
-                baseY: H * 0.45,
-                spreadY: H * 0.32,
-                startOffset: 0,
-                cols: 2,
-            });
-            if (bubble) {
-                bubble.alive = false;
-                bubbleLayer.removeChild(bubble.sprite);
-                bubble = null;
-            }
         } else if (milestone > lastMilestone && score % triggerInterval === 0 && !easterEggActive) {
             lastMilestone = milestone;
-            spawnCreature();
-            if (bubble) {
-                bubble.alive = false;
-                bubbleLayer.removeChild(bubble.sprite);
-                bubble = null;
+        }
+
+        let rewardAction = null;
+        if (score === 30 && !easterEggActive) {
+            rewardAction = () => {
+                spawnCreature({
+                    count: 10,
+                    hasExhaust: Math.random() < 0.5,
+                    direction: Math.random() < 0.5 ? 'left' : 'right',
+                    baseY: H * 0.45,
+                    spreadY: H * 0.32,
+                    startOffset: 0,
+                    cols: 2,
+                });
+            };
+        } else if (milestone > lastMilestone && score % triggerInterval === 0 && !easterEggActive) {
+            rewardAction = () => spawnCreature();
+        }
+
+        const charVal = poppedBubble.char;
+        const hadEmojiEffect = !!WORD_CONFIG.emoji_dict?.[charVal];
+        if (hadEmojiEffect) {
+            queuePostEffectAction(() => {
+                if (gameRunning && !creaturePaused && !bubble && emojiEffects.length === 0) {
+                    bubble = createBubble();
+                }
+                if (rewardAction && gameRunning && !creaturePaused) {
+                    rewardAction();
+                }
+            });
+            spawnEmojiEffect(charVal, poppedBubble.x, poppedBubble.y, poppedBubble.radius);
+        } else {
+            if (rewardAction) {
+                rewardAction();
+            } else {
+                scheduleNextBubble(0);
             }
         }
-        setTimeout(() => {
-            if (gameRunning && !creaturePaused) bubble = createBubble();
-        }, 400);
     }
 
     function onWrong() {
@@ -1040,10 +1177,13 @@
         bubbleLayer.removeChildren();
         particleLayer.removeChildren();
         creatureLayer.removeChildren();
+        effectLayer.removeChildren();
         particles = [];
         bubble = null;
         creatures.forEach(c => creatureLayer.removeChild(c.sprite));
         creatures = [];
+        emojiEffects = [];
+        pendingPostEffectAction = null;
         easterEggActive = false;
         creaturePaused = false;
         hint.textContent = '✨ 已返回，调整后重新开始';
@@ -1066,7 +1206,9 @@
     function resetGame() {
         particleLayer.removeChildren();
         creatureLayer.removeChildren();
+        effectLayer.removeChildren();
         particles = [];
+        pendingPostEffectAction = null;
         score = 0;
         lastMilestone = 0;
         lastChar = null;
@@ -1101,8 +1243,13 @@
             }
         }
         updateCreatures();
+        updateEmojiEffects(deltaTime);
         if (creaturePaused) return;
-        if (!bubble && gameRunning) { bubble = createBubble(); return; }
+        if (!bubble && gameRunning) {
+            if (emojiEffects.length > 0) return;
+            bubble = createBubble();
+            return;
+        }
         if (!bubble) return;
         if (bubble.alive && !bubble.bursting) {
             if (bubble.mode === 'mischief') {
@@ -1290,6 +1437,7 @@
             resetGame();
         }
         if (creatures.length === 0 && !easterEggActive) {
+            if (emojiEffects.length > 0) return;
             spawnCreature();
         }
     });
