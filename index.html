@@ -110,6 +110,21 @@
             background: rgba(255,204,102,0.2);
         }
         .word-tag:hover { background: rgba(255,255,255,0.3); }
+        .emoji-preview {
+            position: fixed;
+            display: none;
+            z-index: 30;
+            pointer-events: none;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.95);
+            color: #1a3a4a;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            line-height: 1;
+            transform: translate(-50%, -110%);
+            white-space: nowrap;
+        }
         #reviewArea {
             display: none;
             min-height: 40px;
@@ -302,7 +317,6 @@
 
 <div id="overlay">
     <h1>🏎️ 识字泡泡</h1>
-    <div class="sub">读出泡泡里的字，累计正确即可召唤奖励</div>
 
     <div class="section-title">
         <span>📚 新字词</span>
@@ -364,37 +378,53 @@
             creatureSpeed: 4,
         },
         new_words: [
-            { text: '羊', selected: true },
-            { text: '门', selected: true },
-            { text: '电', selected: true },
-            { text: '中', selected: true },
-            { text: '众', selected: true },
-            { text: '云', selected: true },
             { text: '马', selected: true },
-            { text: '水', selected: false },
-            { text: '石', selected: false },
-            { text: '鸟', selected: false },
-            { text: '花', selected: false },
-            { text: '树', selected: false },
-            { text: '虫', selected: false },
-            { text: '象', selected: false },
-            { text: '虎', selected: false },
-            { text: '熊', selected: false },
-            { text: '木', selected: false },
-            { text: '伞', selected: false },
-            { text: '雪', selected: false },
+            { text: '石', selected: true },
+            { text: '鸟', selected: true },
+            { text: '花', selected: true },
+            { text: '虫', selected: true },
+            { text: '象', selected: true },
+            { text: '虎', selected: true },
+            { text: '熊', selected: true },
+            { text: '木', selected: true },
+            { text: '伞', selected: true },
+            { text: '雪', selected: true },
             { text: '手', selected: false },
             { text: '头', selected: false },
             { text: '眼', selected: false },
             { text: '耳', selected: false },
+            { text: '牙', selected: false },
+            { text: '牛', selected: false },
+            { text: '猪', selected: false },
+            { text: '鸡', selected: false },
+            { text: '狗', selected: false },
             { text: '彩虹', selected: false },
-            { text: '爱心', selected: false },
-
+            { text: '救护车', selected: false },
+            { text: '公交车', selected: false },
+            { text: '赛车', selected: false },
+            { text: '拖拉机', selected: false },
+            { text: '自行车', selected: false },
+            { text: '直升机', selected: false },
+            { text: '红绿灯', selected: false },
+            { text: '加油', selected: false },
+            { text: '马路', selected: false }
+            // { text: '爱心', selected: false },
+            // { text: '气球', selected: false },
+            // { text: '老师', selected: false },
+            // { text: '医生', selected: false },
+            // { text: '开', selected: false },
+            // { text: '关', selected: false },
+            // { text: '上', selected: false },
+            // { text: '下', selected: false },
+            // { text: '树', selected: false },
+            // { text: '云', selected: true },
+            // { text: '水', selected: true },
+            // { text: '力', selected: false },
         ],
         review_words: [
             '6', '9', '麦', '田', '大', '小', '车', '山', 
             '鱼', '人', '雨', '风', '兔', '月', '火', '恐龙', 
-            '飞机'
+            '飞机', '羊', '门', '电', '中', '众'
         ],
         emoji_dict: {
             '羊': '🐑', '门': '🚪', '电': '⚡', '力': '💪',
@@ -406,15 +436,45 @@
             '手': '✋', '头': '🧒🏻', '眼': '👁️', '耳': '👂',
             '开': '🔓', '关': '🔒', '上': '⬆️', '下': '⬇️',
             '牛': '🐮', '猪': '🐷', '鸡': '🐓', '狗': '🐕',
-            '众': '👨‍👧‍👧', '牙': '🦷', '熊': '🐻',
+            '众': '👨‍👧‍👧', '牙': '🦷', '熊': '🐻', '中': '🀄',
             '恐龙': '🦖', '飞机': '✈️', '医生': '👩🏻‍⚕️', 
-            '山': '⛰️', '石': '🪨', '象': '🐘', '虎': '🐯'
+            '山': '⛰️', '石': '🪨', '象': '🐘', '虎': '🐯',
+            '火': '🔥', '猫': '🐱', '走': '🚶🏻‍♂️', '跑': '🏃🏻‍♂️',
+            
+            '救护车': '🚑', '公交车': '🚌', '赛车': '🏎️', '拖拉机': '🚜',
+            '自行车': '🚲', '直升机': '🚁', '红绿灯': '🚦',
+            '加油': '⛽', '马路': '🛣️', '警车': '🚓',
+
+            '狗': '🐶', '猪': '🐷', '鸡': '🐔', '鸭': '🦆',
+            '猴': '🐒', '狼': '🐺', '鹅': '🦢', '孔雀': '🦚',
+            '火烈鸟': '🦩', '长颈鹿': '🦒', '青蛙': '🐸',
+            '鳄鱼': '🐊', '乌龟': '🐢', '蛇': '🐍',
+            '蝴蝶': '🦋', '蜜蜂': '🐝', '血': '🩸', 
+
+            '书': '📖', '笔': '✏️', '信': '✉️', '帽子': '🧢',
+            '泡泡': '🫧', '床': '🛏️', '太阳': '☀️', '星星': '⭐',
+            '衣服': '👕', '裤子': '👖', '鞋': '👟', 
+
+            '红': '🟥', '绿': '🟩', '蓝': '🟦','黄': '🟨', 
+            '黑': '⬛', '白': '⬜', '紫': '🟪', '橙': '🟧', 
+
+            '抱': '🫂', '吃': '🥣', '打球': '🎾',
+            '拼图': '🧩', '家': '🏠', 
+            '妈妈': '👩🏻‍🍼', '爸爸': '👨🏻‍🍼', '爷爷': '👴🏻', '奶奶': '👵🏻',
+
+            '热': '🥵', '冷': '🥶', '想': '🤔', '亲': '😙',
+            '笑': '😁', '哭': '😭', '害怕': '😨', '生气': '😡',
+            '困': '🥱', '呆': '😯', '晕': '😵‍💫', '开心': '🥰'
         }
     };
 
     const overlay = document.getElementById('overlay');
     const startBtn = document.getElementById('startBtn');
     const testRewardBtn = document.getElementById('testRewardBtn');
+    const emojiPreview = document.createElement('div');
+    emojiPreview.className = 'emoji-preview';
+    emojiPreview.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(emojiPreview);
     const mainGrid = document.getElementById('mainGrid');
     const reviewGrid = document.getElementById('reviewGrid');
     const reviewBtn = document.getElementById('reviewBtn');
@@ -460,12 +520,38 @@
         reviewChars = reviewWords.map(item => String(item));
     }
 
+    function showEmojiPreview(target, word) {
+        const emoji = WORD_CONFIG.emoji_dict?.[word];
+        if (!emoji) {
+            emojiPreview.style.display = 'none';
+            return;
+        }
+        const rect = target.getBoundingClientRect();
+        emojiPreview.textContent = emoji;
+        emojiPreview.style.left = `${rect.left + rect.width / 2}px`;
+        emojiPreview.style.top = `${rect.top}px`;
+        emojiPreview.style.display = 'inline-flex';
+    }
+
+    function hideEmojiPreview() {
+        emojiPreview.style.display = 'none';
+    }
+
+    function bindWordTagPreview(tag, word) {
+        const emoji = WORD_CONFIG.emoji_dict?.[word];
+        if (!emoji) return;
+        tag.addEventListener('mouseenter', () => showEmojiPreview(tag, word));
+        tag.addEventListener('mousemove', () => showEmojiPreview(tag, word));
+        tag.addEventListener('mouseleave', hideEmojiPreview);
+    }
+
     function renderWords() {
         mainGrid.innerHTML = '';
         ALL_WORDS.forEach(w => {
             const tag = document.createElement('span');
             tag.className = 'word-tag' + (activeChars.includes(w) ? ' active' : '');
             tag.textContent = w;
+            bindWordTagPreview(tag, w);
             tag.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (activeChars.includes(w)) {
@@ -496,6 +582,7 @@
                 const tag = document.createElement('span');
                 tag.className = 'word-tag review';
                 tag.textContent = w;
+                bindWordTagPreview(tag, w);
                 tag.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
                     reviewChars = reviewChars.filter(c => c !== w);
@@ -515,6 +602,7 @@
                 const tag = document.createElement('span');
                 tag.className = 'word-tag review';
                 tag.textContent = w;
+                bindWordTagPreview(tag, w);
                 tag.addEventListener('click', () => {
                     reviewChars = reviewChars.filter(c => c !== w);
                     renderWords();
