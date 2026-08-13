@@ -191,26 +191,6 @@
             color: #ffcc66;
             font-size: clamp(0.9rem, 2vw, 1.3rem);
         }
-        #intervalSection {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: clamp(0.9rem, 2vw, 1.4rem);
-            flex-wrap: wrap;
-            justify-content: center;
-            color: #f0f8ff;
-        }
-        #intervalSelect {
-            font-size: clamp(0.9rem, 2vw, 1.4rem);
-            padding: 2px 12px;
-            border-radius: 30px;
-            border: 2px solid rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            cursor: pointer;
-            outline: none;
-        }
-        #intervalSelect option { background: #1a5a7a; color: #fff; }
         #startBtn {
             font-size: clamp(1.8rem, 4.5vw, 3rem);
             padding: 12px 44px;
@@ -342,16 +322,6 @@
         </div>
     </div>
 
-    <div id="intervalSection">
-        <label>🎁 每答对</label>
-        <select id="intervalSelect">
-            <option value="5">5</option><option value="10" selected>10</option>
-            <option value="15">15</option><option value="20">20</option>
-            <option value="25">25</option><option value="30">30</option><option value="50">50</option>
-        </select>
-        <label>次出奖励</label>
-    </div>
-
     <button id="startBtn">开始游戏</button>
     <button id="testRewardBtn" type="button" aria-label="测试奖励">🫧</button>
 </div>
@@ -380,119 +350,108 @@
         new_words: [
             { text: '牙', selected: true },
             { text: '牛', selected: true },
-            { text: '猪', selected: true },
             { text: '公鸡', selected: true },
-            { text: '狗', selected: true },
             { text: '石头', selected: true },
-            { text: '红绿灯', selected: false },
-            // { text: '加油', selected: true },
-            { text: '马路', selected: true },
-            { text: '爱心', selected: true },
+            { text: '红绿灯', selected: true },
+            { text: '恐龙', selected: true },
             { text: '笑了', selected: true },
             { text: '哭了', selected: true },
             { text: '好人', selected: true },
             { text: '坏蛋', selected: true },
             { text: '不行', selected: true },
-            { text: '工人', selected: false },
-            // { text: '过来', selected: false },
-            { text: '一起', selected: true },
-            // { text: '红的', selected: false },
-            // { text: '绿的', selected: false },
-            // { text: '黑的', selected: true },
-            // { text: '白的', selected: true },
-            { text: '粉的', selected: false },
-            { text: '眼睛', selected: true },
+            { text: '工人', selected: true },
+            { text: '粉的', selected: true },
             { text: '白兔', selected: true },
             { text: '熊猫', selected: true },
-            { text: '老虎', selected: true },
             { text: '红花', selected: true },
-            { text: '妈妈', selected: true },
-            // { text: '救护车', selected: false },
-            // { text: '公交车', selected: false },
-            // { text: '赛车', selected: false },
-            // { text: '拖拉机', selected: false },
-            // { text: '自行车', selected: false },
-            // { text: '直升机', selected: false },
-            // { text: '气球', selected: false },
-            // { text: '老师', selected: false },
-            // { text: '医生', selected: false },
-            // { text: '开', selected: false },
-            // { text: '关', selected: false },
-            // { text: '树', selected: false },
-            // { text: '白云', selected: false },
-            // { text: '水龙头', selected: false },
-            // { text: '大力', selected: false },
-            {text: '猫头鹰', selected: false},
-            {text: '山羊', selected: false},
-            {text: '小鸡', selected: false},
-            {text: '雪人', selected: false},
-            {text: '太阳', selected: false}, 
-            {text: '月亮', selected: false},
-             {text: '河马', selected: false}, 
-             {text: '老鼠', selected: false},
-            {text: '毛毛虫', selected: false},
-             {text: '木头', selected: false},
-                {text: '老人', selected: false},
-                {text: '星星', selected: false},
+            { text: '猫头鹰', selected: true },
+            { text: '小鸡', selected: true },
+            { text: '太阳', selected: true },
+            { text: '月亮', selected: true },
+            { text: '河马', selected: true },
+            { text: '老鼠', selected: true },
+            { text: '毛毛虫', selected: true },
+            { text: '木头', selected: true },
+            { text: '老人', selected: true },
+            { text: '星星', selected: false },
+            { text: '水龙头', selected: false },
+            { text: '鸭子', selected: false },
+            { text: '气球', selected: false },
+            { text: '开', selected: false },
+            { text: '关', selected: false },
+            { text: '走路', selected: false },
+            { text: '跑步', selected: false }
         ],
         review_words: [
-            '6', '9', '麦', '田', '大', '小', '车', '山', 
-            '鱼', '人', '雨', '风', '兔', '月', '火', '恐龙', 
-            '飞机', '羊', '门', '电', '中', '众', '马', '花', 
+            '麦', '田', '大', '小', '车', '山', '虫',
+            '鱼', '人', '雨', '风', '兔', '月', '火',
+            '飞机', '羊', '门', '电', '中', '众', '马', '花',
             '象', '伞', '熊', '雪', '彩虹', '上', '下',
-            '木', '鸟', '手', '头', '耳', '我们','岩石',
-            '虎', '爸爸', '毛毛虫', '鸡'
+            '木', '鸟', '手', '头', '耳', '我们', '岩石',
+            '虎', '爸爸', '毛毛虫', '鸡', '马路', '眼睛',
+            '爱心', '山羊', '一起', '妈妈', '老虎', '雪人',
+            '猪', '狗',
         ],
         emoji_dict: {
-            '6': '6️⃣', '9': '9️⃣',  '雨': '🌧️', '人': '👤',
-            '羊': '🐑', '门': '🚪', '电': '⚡', '大力': '💪',
-            '马': '🐎', '雪': '❄️', '白云': '☁️', '水': '💧', 
-            '鸟': '🐦', '花': '🌸', '树': '🌳', '虫': '🐛',
-            '木': '🪵', '火': '🔥', '兔': '🐇', '月': '🌙',
-            '伞': '☂️', '风': '💨', '鱼': '🐟', '车': '🚗',
-            '彩虹': '🌈', '气球': '🎈', '老师': '👩🏻‍🏫', '爱心': '❤️',
-            '手': '✋', '头': '🧒🏻', '眼睛': '👁️', '耳': '👂',
-            '开': '🔓', '关': '🔒', '上': '⬆️', '下': '⬇️',
-            '牛': '🐮', '猪': '🐷', '鸡': '🐓', '狗': '🐕',
-            '众': '👨‍👧‍👧', '牙': '🦷', '熊': '🐻', '中': '🀄',
-            '恐龙': '🦖', '飞机': '✈️', '医生': '👩🏻‍⚕️', '石头': '🪨',
-            '山': '⛰️', '岩石': '🪨', '象': '🐘', '虎': '🐯',
-            '火': '🔥', '猫': '🐱', '走': '🚶🏻‍♂️', '跑': '🏃🏻‍♂️',
+            // ==================== 复习词 ====================
+            // 来自 review_words 数组的词
+            '车': '🚗', '山': '⛰️', '鱼': '🐟', '人': '👤', '雨': '🌧️', 
+            '兔': '🐇', '月': '🌙', '火': '🔥', '飞机': '✈️', '羊': '🐑',
+            '门': '🚪', '电': '⚡', '中': '🀄', '众': '👨‍👧‍👧', '马': '🐎',
+            '花': '🌸', '象': '🐘', '伞': '☂️', '熊': '🐻', '雪': '❄️',
+            '彩虹': '🌈', '上': '⬆️', '下': '⬇️', '木': '🪵', '鸟': '🐦',
+            '手': '✋', '头': '🧒🏻', '耳': '👂', '我们': '👨🏻‍👩🏻‍👦🏻‍👦🏻', '风': '💨',
+            '岩石': '🪨', '虎': '🐯', '爸爸': '👨🏻‍🍼', '毛毛虫': '🐛',
+            '鸡': '🐓', '马路': '🛣️', '眼睛': '👁️', '爱心': '❤️',
+            '山羊': '🐐', '一起': '👯‍♀️', '虫': '🐛', 
 
-            '救护车': '🚑', '公交车': '🚌', '赛车': '🏎️', '拖拉机': '🚜',
-            '自行车': '🚲', '直升机': '🚁', '红绿灯': '🚦',
-            '加油': '⛽', '马路': '🛣️', '警车': '🚓',
+            // ==================== 新词 ====================
+            '牙': '🦷', '牛': '🐮', '猪': '🐷', '公鸡': '🐓',
+            '狗': '🐕', '石头': '🪨', '红绿灯': '🚦', '恐龙': '🦖',
+            '笑了': '😁', '哭了': '😭', '好人': '👧🏻', '坏蛋': '🦹',
+            '不行': '🙅🏻‍♂️', '工人': '👨🏼‍🔧', '粉的': '🩷', '白兔': '🐰',
+            '熊猫': '🐼', '老虎': '🐯', '红花': '🌹', '妈妈': '👩🏻‍🍼',
+            '猫头鹰': '🦉', '小鸡': '🐤', '雪人': '⛄', '太阳': '☀️',
+            '月亮': '🌙', '河马': '🦛', '老鼠': '🐭', '毛毛虫': '🐛',
+            '木头': '🪵', '老人': '🧓🏻', '星星': '⭐', '水龙头': '🚰',
 
-            '狗': '🐶', '猪': '🐷', '鸡': '🐔', '鸭': '🦆',
-            '猴': '🐒', '狼': '🐺', '鹅': '🦢', '孔雀': '🦚',
-            '火烈鸟': '🦩', '长颈鹿': '🦒', '青蛙': '🐸',
-            '鳄鱼': '🐊', '乌龟': '🐢', '蛇': '🐍', '白兔': '🐰',
-            '蝴蝶': '🦋', '蜜蜂': '🐝', '血': '🩸', '公鸡': '🐓',
-            '熊猫': '🐼', '老虎': '🐯', 
+            // ==================== 未学词 ====================
 
+            // ---- 动物 ----
+            '鸭子': '🦆', '猴': '🐒', '狼': '🐺', '鹅': '🦢',
+            '孔雀': '🦚', '火烈鸟': '🦩', '长颈鹿': '🦒',
+            '青蛙': '🐸', '鳄鱼': '🐊', '乌龟': '🐢',
+            '蛇': '🐍', '蝴蝶': '🦋', '蜜蜂': '🐝', 
+            '猫': '🐱',
+
+            // ---- 车辆 ----
+            '救护车': '🚑', '公交车': '🚌', '赛车': '🏎️',
+            '拖拉机': '🚜', '自行车': '🚲', '直升机': '🚁',
+            '加油': '⛽', '警车': '🚓',
+
+            // ---- 衣物/物品 ----
             '书': '📖', '笔': '✏️', '信': '✉️', '帽子': '🧢',
-            '泡泡': '🫧', '床': '🛏️', 
-            '衣服': '👕', '裤子': '👖', '鞋': '👟', 
+            '泡泡': '🫧', '床': '🛏️', '衣服': '👕', '裤子': '👖',
+            '鞋': '👟',
 
-            '红的': '🟥', '绿的': '🟩', '蓝的': '🟦','黄': '🟨', 
-            '黑的': '⬛', '白的': '⬜', '紫': '🟪', '橙': '🟧', 
-            '粉的': '🩷', '红花': '🌹',
+            // ---- 颜色 ----
+            '红的': '🟥', '绿的': '🟩', '蓝的': '🟦', '黄': '🟨',
+            '黑的': '⬛', '白的': '⬜', '紫': '🟪', '橙': '🟧',
 
-            '抱': '🫂', '吃': '🥣', '打球': '🎾',
-            '拼图': '🧩', '家': '🏠', '水龙头': '🚰',
-            '妈妈': '👩🏻‍🍼', '爸爸': '👨🏻‍🍼', '爷爷': '👴🏻', '奶奶': '👵🏻',
-
+            // ---- 动作/情感 ----
+            '抱': '🫂', '吃': '🥣', '打球': '🎾', '拼图': '🧩',
             '热了': '🥵', '冷了': '🥶', '想': '🤔', '亲': '😙',
-            '笑了': '😁', '哭了': '😭', '害怕': '😨', '生气': '😡',
-            '困': '🥱', '呆': '😯', '晕': '😵‍💫', '开心': '🥰',
+            '害怕': '😨', '生气': '😡', '困': '🥱', '呆': '😯',
+            '晕': '😵‍💫', '开心': '🥰', '过来': '⛹🏻‍♂️',
 
-            '上': '👆', '下': '👇', '好人': '👧🏻', '坏蛋': '🦹',
-            '不行': '🙅🏻‍♂️', '我们': '👨🏻‍👩🏻‍👦🏻‍👦🏻', '工人': '👨🏼‍🔧', '过来': '⛹🏻‍♂️',
-            '一起': '👯‍♀️',
+            // ---- 人物/称呼 ----
+            '家': '🏠', '爷爷': '👴🏻', '奶奶': '👵🏻',
+            '医生': '👩🏻‍⚕️', '老师': '👩🏻‍🏫',
 
-            '猫头鹰': '🦉', '山羊': '🐐', '小鸡': '🐤', '雪人': '⛄',
-            '太阳': '☀️', '月亮': '🌙', '河马': '🦛', '老鼠': '🐭',
-            '毛毛虫': '🐛', '木头': '🪵', '老人': '🧓🏻', '星星': '⭐',
+            // ---- 其他 ----
+            '大力': '💪', '白云': '☁️', '水': '💧', '树': '🌳',
+            '气球': '🎈', '开': '🔓', '关': '🔒',
+            '走路': '🚶🏻‍♂️', '跑步': '🏃🏻‍♂️', '血': '🩸',
         }
     };
 
@@ -509,7 +468,6 @@
     const reviewModal = document.getElementById('reviewModal');
     const reviewModalGrid = document.getElementById('reviewModalGrid');
     const modalCloseBtn = document.getElementById('modalCloseBtn');
-    const intervalSelect = document.getElementById('intervalSelect');
     const hint = document.getElementById('hint');
     const bubbleSpeedSlider = document.getElementById('bubbleSpeedSlider');
     const creatureSpeedSlider = document.getElementById('creatureSpeedSlider');
@@ -525,6 +483,7 @@
     let creatureSpeedMul = WORD_CONFIG.config.creatureSpeed;
     let nextBubbleMode = null;
     let gameRunning = false;
+    let forcedFirstWord = null;
 
     function clampSpeedValue(value, fallback) {
         const parsed = Number(value);
@@ -591,13 +550,12 @@
             });
             tag.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
-                if (reviewChars.includes(w)) {
-                    reviewChars = reviewChars.filter(c => c !== w);
-                } else {
-                    reviewChars.push(w);
+                // 右键点击：强制第一个泡泡并启动游戏
+                if (!activeChars.includes(w)) {
+                    activeChars.push(w);
                 }
-                if (!activeChars.includes(w)) activeChars.push(w);
-                renderWords();
+                forcedFirstWord = w;
+                startGame();
             });
             mainGrid.appendChild(tag);
         });
@@ -818,9 +776,18 @@
         }
         if (pool.length === 0) return null;
 
-        let available = pool.filter(c => c !== lastChar);
-        if (available.length === 0) available = pool.slice();
-        const charVal = available[Math.floor(Math.random() * available.length)];
+        let charVal;
+        
+        // 如果有强制字词，使用它作为第一个泡泡
+        if (forcedFirstWord !== null) {
+            charVal = forcedFirstWord;
+            forcedFirstWord = null;  // 使用后重置
+        } else {
+            // 正常随机选择
+            let available = pool.filter(c => c !== lastChar);
+            if (available.length === 0) available = pool.slice();
+            charVal = available[Math.floor(Math.random() * available.length)];
+        }
         lastChar = charVal;
 
         const radius = Math.min(W, H) * 0.18;
@@ -1045,13 +1012,9 @@
     const VEHICLES = [
         // 无尾气奖励
         { type: 'emoji', emoji: '🚂', hasExhaust: false },
-        { type: 'emoji', emoji: '🦈', hasExhaust: false },
-        { type: 'emoji', emoji: '🦀', hasExhaust: false },
-        { type: 'emoji', emoji: '🐠', hasExhaust: false },
-        { type: 'emoji', emoji: '🐢', hasExhaust: false },
-        { type: 'emoji', emoji: '🐡', hasExhaust: false },
         { type: 'emoji', emoji: '🛹', hasExhaust: false },
         { type: 'emoji', emoji: '🚲', hasExhaust: false },
+        { type: 'emoji', emoji: '🚎', hasExhaust: false },
         // 有尾气奖励（默认朝向左边）
         { type: 'emoji', emoji: '🚓', hasExhaust: true },
         { type: 'emoji', emoji: '🚑', hasExhaust: true },
@@ -1059,6 +1022,16 @@
         { type: 'emoji', emoji: '🏍️', hasExhaust: true },
         { type: 'emoji', emoji: '🚚', hasExhaust: true },
         { type: 'emoji', emoji: '🏎️', hasExhaust: true },
+        { type: 'emoji', emoji: '🚗', hasExhaust: true },
+        { type: 'emoji', emoji: '🚙', hasExhaust: true },
+        { type: 'emoji', emoji: '🛻', hasExhaust: true },
+        { type: 'emoji', emoji: '🚛', hasExhaust: true },
+        { type: 'emoji', emoji: '🚜', hasExhaust: true },
+        { type: 'emoji', emoji: '🛺', hasExhaust: true },
+        { type: 'emoji', emoji: '🚁', hasExhaust: true },
+        { type: 'emoji', emoji: '🚌', hasExhaust: true },
+        { type: 'emoji', emoji: '🚐', hasExhaust: true },
+        { type: 'emoji', emoji: '🚕', hasExhaust: true }
     ];
 
     // ---- 生成车辆 ----
@@ -1202,7 +1175,7 @@
         bubble = null;
         score++;
 
-        if (score === 13 || score === 23) {
+        if (score === 7 || score === 15 || score === 23) {
             nextBubbleMode = 'mischief';
         }
 
@@ -1536,7 +1509,10 @@
             setTimeout(() => { hint.style.opacity = '0'; }, 1200);
             return;
         }
-        triggerInterval = parseInt(intervalSelect.value);
+        // 如果右键了字词，确保它被选中
+        if (forcedFirstWord && !activeChars.includes(forcedFirstWord)) {
+            activeChars.push(forcedFirstWord);
+        }
         bubbleSpeedMul = parseInt(bubbleSpeedSlider.value, 10);
         creatureSpeedMul = parseInt(creatureSpeedSlider.value, 10);
         if (gameRunning) return;
