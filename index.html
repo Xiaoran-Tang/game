@@ -349,38 +349,43 @@
         },
         new_words: [
             { text: '牙', selected: true },
-            { text: '牛', selected: true },
             { text: '公鸡', selected: true },
             { text: '石头', selected: true },
-            { text: '红绿灯', selected: true },
+            { text: '红绿灯', selected: false },
             { text: '恐龙', selected: true },
-            { text: '笑了', selected: true },
-            { text: '哭了', selected: true },
             { text: '好人', selected: true },
             { text: '坏蛋', selected: true },
             { text: '不行', selected: true },
             { text: '工人', selected: true },
             { text: '粉的', selected: true },
-            { text: '白兔', selected: true },
             { text: '熊猫', selected: true },
             { text: '红花', selected: true },
             { text: '猫头鹰', selected: true },
-            { text: '小鸡', selected: true },
             { text: '太阳', selected: true },
-            { text: '月亮', selected: true },
             { text: '河马', selected: true },
             { text: '老鼠', selected: true },
             { text: '毛毛虫', selected: true },
-            { text: '木头', selected: true },
             { text: '老人', selected: true },
-            { text: '星星', selected: false },
-            { text: '水龙头', selected: false },
-            { text: '鸭子', selected: false },
-            { text: '气球', selected: false },
-            { text: '开', selected: false },
-            { text: '关', selected: false },
+            { text: '星星', selected: true },
+            { text: '水龙头', selected: true },
+            { text: '鸭子', selected: true },
+            { text: '气球', selected: true },
+            { text: '打开', selected: true },
+            { text: '关上', selected: true },
             { text: '走路', selected: false },
-            { text: '跑步', selected: false }
+            { text: '跑步', selected: false },
+            { text: '猫', selected: false },
+            { text: '猴子', selected: false },
+            { text: '泡泡', selected: false },
+            { text: '开心', selected: false },
+            { text: '举手', selected: false },
+            { text: '美人鱼', selected: false },
+            { text: '雪花', selected: false },
+            { text: '火山', selected: false },
+            { text: '爆炸', selected: false },
+            { text: '回家', selected: false },
+            { text: '木马', selected: false },
+            { text: '过来', selected: false },
         ],
         review_words: [
             '麦', '田', '大', '小', '车', '山', '虫',
@@ -390,7 +395,8 @@
             '木', '鸟', '手', '头', '耳', '我们', '岩石',
             '虎', '爸爸', '毛毛虫', '鸡', '马路', '眼睛',
             '爱心', '山羊', '一起', '妈妈', '老虎', '雪人',
-            '猪', '狗',
+            '猪', '狗', '牛', '白兔', '木头', '小鸡', '月亮',
+            '笑了', '哭了', 
         ],
         emoji_dict: {
             // ==================== 复习词 ====================
@@ -399,7 +405,7 @@
             '兔': '🐇', '月': '🌙', '火': '🔥', '飞机': '✈️', '羊': '🐑',
             '门': '🚪', '电': '⚡', '中': '🀄', '众': '👨‍👧‍👧', '马': '🐎',
             '花': '🌸', '象': '🐘', '伞': '☂️', '熊': '🐻', '雪': '❄️',
-            '彩虹': '🌈', '上': '⬆️', '下': '⬇️', '木': '🪵', '鸟': '🐦',
+            '彩虹': '🌈', '上': '👆', '下': '👇', '木': '🪵', '鸟': '🐦',
             '手': '✋', '头': '🧒🏻', '耳': '👂', '我们': '👨🏻‍👩🏻‍👦🏻‍👦🏻', '风': '💨',
             '岩石': '🪨', '虎': '🐯', '爸爸': '👨🏻‍🍼', '毛毛虫': '🐛',
             '鸡': '🐓', '马路': '🛣️', '眼睛': '👁️', '爱心': '❤️',
@@ -414,15 +420,20 @@
             '猫头鹰': '🦉', '小鸡': '🐤', '雪人': '⛄', '太阳': '☀️',
             '月亮': '🌙', '河马': '🦛', '老鼠': '🐭', '毛毛虫': '🐛',
             '木头': '🪵', '老人': '🧓🏻', '星星': '⭐', '水龙头': '🚰',
+            '鸭子': '🦆', '猫': '🐱', '猴子': '🐒', '泡泡': '🫧', 
+            '气球': '🎈', '打开': '🔓', '关上': '🔒', '开心': '🥰', 
+            '走路': '🚶🏻‍♂️', '跑步': '🏃🏻‍♂️', '举手': '🙋🏻', '美人鱼': '🧜🏻‍♀️',
+            '雪花': '❄️', '火山': '🌋', '爆炸': '💥', '回家': '🏠', 
+            '木马': '🎠', '过来': '⛹🏻‍♂️',
 
             // ==================== 未学词 ====================
 
             // ---- 动物 ----
-            '鸭子': '🦆', '猴': '🐒', '狼': '🐺', '鹅': '🦢',
+            '狼': '🐺', '鹅': '🦢',
             '孔雀': '🦚', '火烈鸟': '🦩', '长颈鹿': '🦒',
             '青蛙': '🐸', '鳄鱼': '🐊', '乌龟': '🐢',
             '蛇': '🐍', '蝴蝶': '🦋', '蜜蜂': '🐝', 
-            '猫': '🐱',
+            
 
             // ---- 车辆 ----
             '救护车': '🚑', '公交车': '🚌', '赛车': '🏎️',
@@ -431,7 +442,7 @@
 
             // ---- 衣物/物品 ----
             '书': '📖', '笔': '✏️', '信': '✉️', '帽子': '🧢',
-            '泡泡': '🫧', '床': '🛏️', '衣服': '👕', '裤子': '👖',
+            '床': '🛏️', '衣服': '👕', '裤子': '👖',
             '鞋': '👟',
 
             // ---- 颜色 ----
@@ -442,16 +453,15 @@
             '抱': '🫂', '吃': '🥣', '打球': '🎾', '拼图': '🧩',
             '热了': '🥵', '冷了': '🥶', '想': '🤔', '亲': '😙',
             '害怕': '😨', '生气': '😡', '困': '🥱', '呆': '😯',
-            '晕': '😵‍💫', '开心': '🥰', '过来': '⛹🏻‍♂️',
+            '晕': '😵‍💫', 
 
             // ---- 人物/称呼 ----
-            '家': '🏠', '爷爷': '👴🏻', '奶奶': '👵🏻',
+            '爷爷': '👴🏻', '奶奶': '👵🏻',
             '医生': '👩🏻‍⚕️', '老师': '👩🏻‍🏫',
 
             // ---- 其他 ----
             '大力': '💪', '白云': '☁️', '水': '💧', '树': '🌳',
-            '气球': '🎈', '开': '🔓', '关': '🔒',
-            '走路': '🚶🏻‍♂️', '跑步': '🏃🏻‍♂️', '血': '🩸',
+            '血': '🩸',
         }
     };
 
@@ -571,8 +581,12 @@
                 bindWordTagPreview(tag, w);
                 tag.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
-                    reviewChars = reviewChars.filter(c => c !== w);
-                    renderWords();
+                    // 右键点击：强制第一个泡泡并启动游戏
+                    if (!activeChars.includes(w)) {
+                        activeChars.push(w);
+                    }
+                    forcedFirstWord = w;
+                    startGame();
                 });
                 reviewGrid.appendChild(tag);
             });
@@ -594,6 +608,15 @@
                     renderWords();
                     reviewModalGrid.innerHTML = '';
                     reviewBtn.click();
+                });
+                tag.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    // 右键点击：强制第一个泡泡并启动游戏
+                    if (!activeChars.includes(w)) {
+                        activeChars.push(w);
+                    }
+                    forcedFirstWord = w;
+                    startGame();
                 });
                 reviewModalGrid.appendChild(tag);
             });
