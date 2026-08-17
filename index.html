@@ -348,22 +348,14 @@
             creatureSpeed: 4,
         },
         new_words: [
-            { text: '公鸡', selected: true },
-            { text: '石头', selected: true },
             { text: '好人', selected: true },
             { text: '坏蛋', selected: true },
             { text: '不行', selected: true },
-            { text: '工人', selected: true },
             { text: '粉的', selected: true },
-            { text: '熊猫', selected: true },
             { text: '太阳', selected: true },
             { text: '河马', selected: true },
             { text: '星星', selected: true },
             { text: '鸭子', selected: true },
-            { text: '打开', selected: true },
-            { text: '关上', selected: true },
-            { text: '走路', selected: true },
-            { text: '跑步', selected: true },
             { text: '猫', selected: true },
             { text: '猴子', selected: true },
             { text: '泡泡', selected: true },
@@ -372,18 +364,25 @@
             { text: '美人鱼', selected: true },
             { text: '雪花', selected: true },
             { text: '火山', selected: true },
+            { text: '大灰狼', selected: false },
+            { text: '摩天轮', selected: false },
             { text: '爆炸', selected: false },
             { text: '回家', selected: false },
             { text: '木马', selected: false },
-            { text: '过来', selected: false },
             { text: '好朋友', selected: false },
             { text: '水果', selected: false },
             { text: '火车', selected: false },
             { text: '看', selected: false },
-            { text: '红绿灯', selected: false },
-            { text: '蛋', selected: false },
             { text: '蜜蜂', selected: false },
-            { text: '大灰狼', selected: false },
+            { text: '西瓜', selected: false },
+            { text: '过山车', selected: false },
+            { text: '公鸡', selected: false },
+            { text: '走路', selected: false },
+            { text: '跑步', selected: false },
+            { text: '工人', selected: false },
+            { text: '打开', selected: false },
+            { text: '关上', selected: false },
+            
         ],
         review_words: [
             '麦', '田', '大', '小', '车', '山', '虫',
@@ -395,7 +394,7 @@
             '爱心', '山羊', '一起', '妈妈', '老虎', '雪人',
             '猪', '狗', '牛', '白兔', '木头', '小鸡', '月亮',
             '笑了', '哭了', '牙', '水龙头', '气球', '老鼠',
-            '毛毛虫', '猫头鹰', '恐龙', '红花', '老人',
+            '毛毛虫', '猫头鹰', '恐龙', '红花', '老人', '石头',
         ],
         emoji_dict: {
             // ==================== 复习词 ====================
@@ -409,9 +408,10 @@
             '岩石': '🪨', '虎': '🐯', '爸爸': '👨🏻‍🍼', '毛毛虫': '🐛',
             '鸡': '🐔', '马路': '🛣️', '眼睛': '👁️', '爱心': '❤️',
             '山羊': '🐐', '一起': '👯‍♀️', '虫': '🐛', 
+            '牙': '🦷', '牛': '🐮', '猪': '🐷', 
 
             // ==================== 新词 ====================
-            '牙': '🦷', '牛': '🐮', '猪': '🐷', '公鸡': '🐓',
+            '公鸡': '🐓',
             '狗': '🐕', '石头': '🪨', '红绿灯': '🚦', '恐龙': '🦖',
             '笑了': '😁', '哭了': '😭', '好人': '👧🏻', '坏蛋': '🦹',
             '不行': '🙅🏻‍♂️', '工人': '👨🏼‍🔧', '粉的': '🩷', '白兔': '🐰',
@@ -425,7 +425,7 @@
             '雪花': '❄️', '火山': '🌋', '爆炸': '💥', '回家': '🏠', 
             '木马': '🎠', '过来': '⛹🏻‍♂️', '好朋友': '👭🏻', '水果': '🥭',
             '火车': '🚂', '看': '👀', '蛋': '🥚', '蜜蜂': '🐝',
-            '大灰狼': '🐺', 
+            '大灰狼': '🐺', '摩天轮': '🎡', '西瓜': '🍉', '过山车': '🎢',
 
             // ==================== 未学词 ====================
 
@@ -444,7 +444,7 @@
             // ---- 衣物/物品 ----
             '书': '📖', '笔': '✏️', '信': '✉️', '帽子': '🧢',
             '床': '🛏️', '衣服': '👕', '裤子': '👖',
-            '鞋': '👟',
+            '鞋': '👟', '手表': '⌚',
 
             // ---- 颜色 ----
             '红的': '🟥', '绿的': '🟩', '蓝的': '🟦', '黄': '🟨',
@@ -791,7 +791,7 @@
         const m = activeChars.length;
         const n = reviewChars.length;
         if (m > 0 && n > 0) {
-            const reviewProbability = (n / 10) / (m + n / 10);
+            const reviewProbability = 0.15;
             pool = Math.random() < reviewProbability ? reviewChars.slice() : activeChars.slice();
         } else if (n > 0) {
             pool = reviewChars.slice();
