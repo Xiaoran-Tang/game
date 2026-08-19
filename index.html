@@ -351,6 +351,7 @@
             { text: '好人', selected: true },
             { text: '河马', selected: true },
             { text: '猫', selected: true },
+            { text: '熊猫', selected: true },
             { text: '猴子', selected: true },
             { text: '泡泡', selected: true },
             { text: '开心', selected: true },
@@ -378,7 +379,6 @@
             { text: '红绿灯', selected: false },
             { text: '蛋', selected: false },
             { text: '过来', selected: false },
-            { text: '熊猫', selected: true },
         ],
         review_words: [
             '麦', '田', '大', '小', '车', '山', '虫',
@@ -1252,7 +1252,11 @@
     }
 
     // ---- 事件 ----
-    app.view.addEventListener('click', () => {
+    app.view.addEventListener('click', (e) => {
+        if (gameRunning && e.clientX >= window.innerWidth - 3 && e.clientY < 3) {
+            goBackToMenu();
+            return;
+        }
         if (!gameRunning) {
             startGame();
             return;
